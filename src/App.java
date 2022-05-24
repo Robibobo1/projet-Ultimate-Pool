@@ -28,7 +28,8 @@ public class App extends PortableApplication {
 	
 	
 	
-	PhysicsCircle boule = new PhysicsCircle("boule", new Vector2(200,245), 12, 1, 0.5f, 0.1f);
+	
+	PhysicsCircle boule = new PhysicsCircle("boule", new Vector2(200,248), 12, 1, 1f, 0);
 	
 	App()
 	{
@@ -45,6 +46,7 @@ public class App extends PortableApplication {
 	public void onInit() {
 		// TODO Auto-generated method stub
 		world.setGravity(new Vector2(0,0));
+		world.setVelocityThreshold(0.0001f);
 		dbgRenderer = new DebugRenderer();
 		new PhysicsScreenBoundaries(getWindowWidth(), getWindowHeight());
 		PoolSetup();
@@ -78,7 +80,7 @@ public class App extends PortableApplication {
 
 		if (button == Input.Buttons.LEFT)
 			//addBall(x, y);
-			boule.applyBodyForceToCenter(new Vector2(40,0.5f), true);
+			boule.applyBodyForceToCenter(new Vector2(40,0), true);
 	}
 	
 	public void addBall(int x, int y) {
@@ -109,7 +111,7 @@ void PoolSetup(){
 	
 	void ballPlacer(int rowLeft) {
 		for (int i = 0; i < rowLeft; i++) {
-			new PhysicsCircle(null, new Vector2(320+(24*rowLeft), 200+12*(5-rowLeft)+24*i), 12, 1, 0.5f, 0.1f);
+			new PhysicsCircle(null, new Vector2(320+(24*rowLeft), 200+12*(5-rowLeft)+24*i), 12, 1, 1f, 0);
 		}
 		if (rowLeft>1) {
 			ballPlacer(rowLeft-1);
