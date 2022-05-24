@@ -1,9 +1,11 @@
+import java.awt.geom.Ellipse2D;
 import java.util.Iterator;
 import java.util.LinkedList;
-
+import java.awt.geom.Ellipse2D.Float;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
 import ch.hevs.gdx2d.components.physics.utils.PhysicsConstants;
 import ch.hevs.gdx2d.components.physics.primitives.PhysicsCircle;
@@ -49,9 +51,10 @@ public class App extends PortableApplication {
 		// TODO Auto-generated method stub
 		g.clear();
 		
-		
+		if(CollisionDetection.test(whiteBall, myCane,g)) System.out.println("COLLISION");
 		PhysicsWorld.updatePhysics(Gdx.graphics.getDeltaTime());
 		dbgRenderer.render(world, g.getCamera().combined);
+		
 		canePlacement();
 		myCane.drawCane(g);
 		g.drawFPS();
@@ -69,7 +72,6 @@ public class App extends PortableApplication {
 		if(button == Input.Buttons.RIGHT)
 		{
 			clickCnt--;
-			//myCane.setAngle(myCane.angle + 10);
 		}
 
 	}
@@ -90,5 +92,4 @@ public class App extends PortableApplication {
 			break;
 		}
 	}
-
 }
