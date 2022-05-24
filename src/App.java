@@ -15,21 +15,24 @@ import ch.hevs.gdx2d.lib.physics.PhysicsWorld;
 
 public class App extends PortableApplication {
 	
-	
+	int width, height;
+	Vector2 ballPosition;
 	DebugRenderer dbgRenderer;
 	World world = PhysicsWorld.getInstance();
 	PhysicsCircle whiteBall;
 	Cane myCane;
-	
-	
-	App(int width,int height)
-	{
-		super(width ,height);
-		whiteBall = new PhysicsCircle("White", new Vector2(width/2,height/2), 20);
+	int clickCnt = 0;
+
+	App(int width, int height) {
+		super(width, height);
+		this.width = width;
+		this.height = height;
+		ballPosition = new Vector2(this.width / 2, this.height / 2);
+		whiteBall = new PhysicsCircle("White",ballPosition , 20);
 	}
-	
+
 	public static void main(String[] args) {
-		new App((int) (8 * PhysicsConstants.METERS_TO_PIXELS),(int) (8 * PhysicsConstants.METERS_TO_PIXELS));
+		new App(600, 600);
 	}
 
 	@Override
@@ -38,7 +41,7 @@ public class App extends PortableApplication {
 		world.setGravity(new Vector2(0, 0));
 		dbgRenderer = new DebugRenderer();
 		new PhysicsScreenBoundaries(getWindowWidth(), getWindowHeight());
-		myCane = new Cane(new Vector2(300,150),2);
+		myCane = new Cane(new Vector2(300, 150), 0);
 	}
 
 	@Override
@@ -49,25 +52,43 @@ public class App extends PortableApplication {
 		
 		PhysicsWorld.updatePhysics(Gdx.graphics.getDeltaTime());
 		dbgRenderer.render(world, g.getCamera().combined);
+		canePlacement();
 		myCane.drawCane(g);
 		g.drawFPS();
-		
+
 	}
-	
+
 	@Override
 	public void onClick(int x, int y, int button) {
 		super.onClick(x, y, button);
 
-		if (button == Input.Buttons.LEFT)
-		{
-			myCane.setPosition(new Vector2(x,y));
+		if (button == Input.Buttons.LEFT) {
+			clickCnt++;
 		}
-		
+
 		if(button == Input.Buttons.RIGHT)
 		{
-			myCane.setAngle(myCane.angle + 10);
+			clickCnt--;
+			//myCane.setAngle(myCane.angle + 10);
 		}
-			
+
 	}
-	
+
+	void canePlacement() {
+		Vector2 mousePosition = new Vector2(Gdx.input.getX(),this.height - Gdx.input.getY());
+		switch (clickCnt) {
+		case 0:
+			myCane.setPosition(mousePosition);
+			float angle = - (float) Math.toDegrees(Math.atan((ballPosition.x - mousePosition.x)/(ballPosition.y-mousePosition.y)));
+			myCane.setAngle(angle);
+			break;
+		case 1:
+			myCane.setPosition(mousePosition);
+			break;
+		default:
+			clickCnt = 0;
+			break;
+		}
+	}
+
 }
