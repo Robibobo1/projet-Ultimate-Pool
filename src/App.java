@@ -28,16 +28,7 @@ public class App extends PortableApplication {
 	
 	
 	
-//	PhysicsStaticLine ligne = new PhysicsStaticLine("boite1", new Vector2(100,100), new Vector2(500,100));
-//	PhysicsStaticLine ligne2 = new PhysicsStaticLine("boite2", new Vector2(500,100), new Vector2(500,400));
-//	PhysicsStaticLine ligne3 = new PhysicsStaticLine("boite3", new Vector2(500,400), new Vector2(100,400));
-//	PhysicsStaticLine ligne4 = new PhysicsStaticLine("boite4", new Vector2(100,400), new Vector2(100,100));
-//	PhysicsBox queue = new PhysicsBox("queue", new Vector2(250,300), 200, 4, 50, 0, 0);
-	
-	//addBall(400,302);
-	//addBall(210,302);
-	
-	//queue.applyBodyForce(new Vector2(0.01f,0), new Vector2(449,302), true);
+	PhysicsCircle boule = new PhysicsCircle("boule", new Vector2(200,245), 12, 1, 0.5f, 0.1f);
 	
 	App()
 	{
@@ -56,9 +47,8 @@ public class App extends PortableApplication {
 		world.setGravity(new Vector2(0,0));
 		dbgRenderer = new DebugRenderer();
 		new PhysicsScreenBoundaries(getWindowWidth(), getWindowHeight());
+		PoolSetup();
 		
-		new PoolSetup();
-		//PhysicyCircle boule = new 
 	}
 
 	@Override
@@ -87,8 +77,8 @@ public class App extends PortableApplication {
 		super.onClick(x, y, button);
 
 		if (button == Input.Buttons.LEFT)
-			addBall(x, y);
-			//queue.applyBodyForceToCenter(new Vector2(1500,0), CreateLwjglApplication);
+			//addBall(x, y);
+			boule.applyBodyForceToCenter(new Vector2(40,0.5f), true);
 	}
 	
 	public void addBall(int x, int y) {
@@ -103,5 +93,27 @@ public class App extends PortableApplication {
 
 		// Add the ball to the list of existing balls
 		list.add(b);
+	}
+	
+void PoolSetup(){
+		
+	
+	PhysicsStaticLine ligne = new PhysicsStaticLine("boite1", new Vector2(100,100), new Vector2(500,100));
+	PhysicsStaticLine ligne2 = new PhysicsStaticLine("boite2", new Vector2(500,100), new Vector2(500,400));
+	PhysicsStaticLine ligne3 = new PhysicsStaticLine("boite3", new Vector2(500,400), new Vector2(100,400));
+	PhysicsStaticLine ligne4 = new PhysicsStaticLine("boite4", new Vector2(100,400), new Vector2(100,100));
+	
+		ballPlacer(5);
+		
+	}
+	
+	void ballPlacer(int rowLeft) {
+		for (int i = 0; i < rowLeft; i++) {
+			new PhysicsCircle(null, new Vector2(320+(24*rowLeft), 200+12*(5-rowLeft)+24*i), 12, 1, 0.5f, 0.1f);
+		}
+		if (rowLeft>1) {
+			ballPlacer(rowLeft-1);
+		}
+
 	}
 }
