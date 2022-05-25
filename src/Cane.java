@@ -10,8 +10,7 @@ public class Cane {
 	Vector2 position;
 	float angle;
 	Point hitPoint1, hitPoint2;
-
-	
+	double magicAngle;
 	int lenght = 120;
 	int width = 10;
 	
@@ -21,6 +20,7 @@ public class Cane {
 		this.angle = angle;
 		hitPoint1 = new Point();
 		hitPoint2 = new Point();
+		magicAngle = Math.toDegrees(Math.atan(((double)width)/ ((double) lenght)));
 		updateHitPoint();
 	}
 	
@@ -46,9 +46,10 @@ public class Cane {
 	
 	void updateHitPoint()
 	{
-		hitPoint1.x = (int) (position.x + Math.sin(Math.toRadians(4.76 - angle)) * lenght/2);
-		hitPoint1.y = (int) (position.y +  Math.cos(Math.toRadians(4.76 - angle )) * lenght/2);
-		hitPoint2.x = (int) (position.x + Math.sin(Math.toRadians(-4.76 - angle)) * lenght/2);
-		hitPoint2.y = (int) (position.y +  Math.cos(Math.toRadians(-4.76 - angle )) * lenght/2);
+		
+		hitPoint1.x = (int) (position.x + Math.sin(Math.toRadians(magicAngle - angle)) * lenght/2);
+		hitPoint1.y = (int) (position.y +  Math.cos(Math.toRadians(magicAngle - angle )) * lenght/2);
+		hitPoint2.x = (int) (position.x + Math.sin(Math.toRadians(-magicAngle - angle)) * lenght/2);
+		hitPoint2.y = (int) (position.y +  Math.cos(Math.toRadians(-magicAngle - angle )) * lenght/2);
 	}
 }

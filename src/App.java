@@ -52,7 +52,6 @@ public class App extends PortableApplication {
 		g.clear();
 		
 		if(CollisionDetection.test(whiteBall, myCane,g)) System.out.println("COLLISION");
-		else System.out.println("");
 		PhysicsWorld.updatePhysics(Gdx.graphics.getDeltaTime());
 		dbgRenderer.render(world, g.getCamera().combined);
 		
