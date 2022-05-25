@@ -26,8 +26,6 @@ import ch.hevs.gdx2d.lib.physics.PhysicsWorld;
 
 
 public class App extends PortableApplication {
-	LinkedList<PhysicsCircle> list = new LinkedList<PhysicsCircle>();
-	
 	
 	
 	DebugRenderer dbgRenderer;
@@ -36,8 +34,8 @@ public class App extends PortableApplication {
 
 	
 	
-	PhysicsCircle boule = new PhysicsCircle("boule", new Vector2(200,248), 12, 10, 1f, 0);
-	PhysicsStaticBox boiteF = new PhysicsStaticBox(null, new Vector2(300,250), 10, 10);
+	PhysicsCircle boule;
+	PhysicsStaticBox boiteF;
 	
 	
 	App()
@@ -68,14 +66,7 @@ public class App extends PortableApplication {
 		g.clear();
 
 		// Physics update
-		for (Iterator<PhysicsCircle> it = list.iterator(); it.hasNext(); ) {
-			PhysicsCircle c = it.next();
-			Float radius = c.getBodyRadius();
-			Vector2 pos = c.getBodyPosition();
-			g.drawCircle(pos.x, pos.y, radius);
-			c.setBodyAwake(true);
-		}
-		
+
 		PhysicsWorld.updatePhysics(Gdx.graphics.getDeltaTime());
 		dbgRenderer.render(world, g.getCamera().combined);
 
@@ -88,27 +79,14 @@ public class App extends PortableApplication {
 		super.onClick(x, y, button);
 
 		if (button == Input.Buttons.LEFT)
-			//addBall(x, y);
-			boule.applyBodyForceToCenter(new Vector2(100,0), true);
+			boule.applyBodyForceToCenter(new Vector2(200,0), true);
 	}
 	
-	public void addBall(int x, int y) {
-		// If there exists enough ball already, remove the oldest one
-		if (list.size() > 50) {
-			PhysicsCircle b = list.poll();
-			b.destroy();
-		}
-
-		float size = (float) ((Math.random() * 15.0f)) + 15f;
-		PhysicsCircle b = new PhysicsCircle(null, new Vector2(x, y), size);
-
-		// Add the ball to the list of existing balls
-		list.add(b);
-	}
 	
 void PoolSetup(){
 		
-	
+	boule = new PhysicsCircle("boule", new Vector2(200,250), 12, 10, 0.7f, 0);
+	boiteF = new PhysicsStaticBox(null, new Vector2(300,250), 10, 10);
 	
 	PhysicsStaticLine ligne = new PhysicsStaticLine("boite1", new Vector2(100,100), new Vector2(500,100));
 	PhysicsStaticLine ligne2 = new PhysicsStaticLine("boite2", new Vector2(500,100), new Vector2(500,400));
@@ -116,7 +94,7 @@ void PoolSetup(){
 	PhysicsStaticLine ligne4 = new PhysicsStaticLine("boite4", new Vector2(100,400), new Vector2(100,100));
 	
 	FrictionJointDef frictionJointDef = new FrictionJointDef();
-    frictionJointDef.maxForce = 0.1f;
+    frictionJointDef.maxForce = 0.05f;
     frictionJointDef.maxTorque = 0;
     frictionJointDef.bodyA = boule.getBody();
     frictionJointDef.bodyB = boiteF.getBody();
@@ -134,7 +112,7 @@ void PoolSetup(){
 			FrictionJointDef frictionJointDef = new FrictionJointDef();
 		    frictionJointDef.maxForce = 0.1f;
 		    frictionJointDef.maxTorque = 0;
-		    frictionJointDef.bodyA = new PhysicsCircle(null, new Vector2(320+(24*rowLeft), 200+12*(5-rowLeft)+24*i), 12, 1, 1f, 0).getBody();;
+		    frictionJointDef.bodyA = new PhysicsCircle(null, new Vector2(320+(25*rowLeft), 200+12*(5-rowLeft)+25*i), 12, 10, 0.7f, 0).getBody();;
 		    frictionJointDef.bodyB = boiteF.getBody();
 		    frictionJointDef.collideConnected = false;
 		    world.createJoint(frictionJointDef);
