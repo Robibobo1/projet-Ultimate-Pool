@@ -38,7 +38,7 @@ public class Cane {
 	void drawCane(GdxGraphics g)
 	{	
 		updateHitPoint();
-		System.out.println(angle);
+		//System.out.println(angle);
 		g.drawRectangle(position.x, position.y, width, lenght, angle);
 		g.setPixel(hitPoint1.x, hitPoint1.y, Color.RED);
 		g.setPixel(hitPoint2.x, hitPoint2.y, Color.RED);
