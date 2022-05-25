@@ -51,7 +51,6 @@ public class App extends PortableApplication {
 		// TODO Auto-generated method stub
 		g.clear();
 		
-		if(CollisionDetection.test(whiteBall, myCane,g)) System.out.println("COLLISION");
 		PhysicsWorld.updatePhysics(Gdx.graphics.getDeltaTime());
 		dbgRenderer.render(world, g.getCamera().combined);
 		
@@ -77,18 +76,18 @@ public class App extends PortableApplication {
 
 	void canePlacement() {
 		Vector2 mousePosition = new Vector2(Gdx.input.getX(),this.height - Gdx.input.getY());
+		float angle = 90 + (float) Math.toDegrees(Math.atan((mousePosition.y-ballPosition.y)/(mousePosition.x-ballPosition.x)));
+		if(mousePosition.x-ballPosition.x < 0) angle = angle + 180;
+		
+		
 		switch (clickCnt) {
 		case 0:
-			myCane.setPosition(mousePosition);
-			float angle = 90 + (float) Math.toDegrees(Math.atan((mousePosition.y-ballPosition.y)/(mousePosition.x-ballPosition.x)));
-			if(mousePosition.x-ballPosition.x < 0)
-			{
-				angle = angle + 180;
-			}
+			if(CollisionDetection.test(whiteBall, myCane) == null)  myCane.setPosition(mousePosition);
 			myCane.setAngle(angle);
 			break;
 		case 1:
-			myCane.setPosition(mousePosition);
+			if(CollisionDetection.test(whiteBall, myCane) == null)  myCane.setPosition(mousePosition);
+			myCane.updateHitPoint();
 			break;
 		default:
 			clickCnt = 0;

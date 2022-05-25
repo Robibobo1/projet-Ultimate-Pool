@@ -9,7 +9,7 @@ import ch.hevs.gdx2d.lib.GdxGraphics;
 public class Cane {
 	Vector2 position;
 	float angle;
-	Point hitPoint1, hitPoint2;
+	Point[] hitPoints = new Point[3];
 	double magicAngle;
 	int lenght = 120;
 	int width = 10;
@@ -18,8 +18,9 @@ public class Cane {
 	{
 		this.position = position;
 		this.angle = angle;
-		hitPoint1 = new Point();
-		hitPoint2 = new Point();
+		for (int i = 0; i < 3; i++) {
+			hitPoints[i] = new Point();
+		}
 		magicAngle = Math.toDegrees(Math.atan(((double)width)/ ((double) lenght)));
 		updateHitPoint();
 	}
@@ -27,7 +28,6 @@ public class Cane {
 	void setPosition(Vector2 position)
 	{
 		this.position = position;
-		
 	}
 	
 	void setAngle(float angle)
@@ -38,18 +38,20 @@ public class Cane {
 	void drawCane(GdxGraphics g)
 	{	
 		updateHitPoint();
-		//System.out.println(angle);
 		g.drawRectangle(position.x, position.y, width, lenght, angle);
-		g.setPixel(hitPoint1.x, hitPoint1.y, Color.RED);
-		g.setPixel(hitPoint2.x, hitPoint2.y, Color.RED);
+		for (int i = 0; i < hitPoints.length; i++) {
+			g.setPixel(hitPoints[i].x, hitPoints[i].y, Color.RED);
+		}
+		
 	}
 	
 	void updateHitPoint()
 	{
-		
-		hitPoint1.x = (int) (position.x + Math.sin(Math.toRadians(magicAngle - angle)) * lenght/2);
-		hitPoint1.y = (int) (position.y +  Math.cos(Math.toRadians(magicAngle - angle )) * lenght/2);
-		hitPoint2.x = (int) (position.x + Math.sin(Math.toRadians(-magicAngle - angle)) * lenght/2);
-		hitPoint2.y = (int) (position.y +  Math.cos(Math.toRadians(-magicAngle - angle )) * lenght/2);
+		hitPoints[0].x = (int) (position.x + Math.sin(Math.toRadians(magicAngle - angle)) * lenght/2);
+		hitPoints[0].y = (int) (position.y +  Math.cos(Math.toRadians(magicAngle - angle )) * lenght/2);
+		hitPoints[1].x = (int) (position.x + Math.sin(Math.toRadians( - angle)) * lenght/2);
+		hitPoints[1].y = (int) (position.y +  Math.cos(Math.toRadians( - angle )) * lenght/2);
+		hitPoints[2].x = (int) (position.x + Math.sin(Math.toRadians(-magicAngle - angle)) * lenght/2);
+		hitPoints[2].y = (int) (position.y +  Math.cos(Math.toRadians(-magicAngle - angle )) * lenght/2);
 	}
 }
