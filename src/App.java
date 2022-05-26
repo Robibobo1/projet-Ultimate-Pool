@@ -51,13 +51,14 @@ public class App extends PortableApplication {
 	public void onGraphicRender(GdxGraphics g) {
 		// TODO Auto-generated method stub
 		g.clear();
-
+		
 		PhysicsWorld.updatePhysics(Gdx.graphics.getDeltaTime());
 		dbgRenderer.render(world, g.getCamera().combined);
-
+		
 		ballPosition = whiteBall.getBodyPosition();
 		canePlacement();
 		myCane.drawCane(g);
+		System.out.println(myCane.getVelocity().len());
 		g.drawFPS();
 
 	}
@@ -81,8 +82,6 @@ public class App extends PortableApplication {
 		float angle = 90 + (float) Math.toDegrees(Math.atan((mousePosition.y - ballPosition.y) / (mousePosition.x - ballPosition.x)));
 		if (mousePosition.x - ballPosition.x < 0)
 			angle = angle + 180;
-		
-		myCane.updateHitPoint();
 		
 		force.setAngle(angle + 90);
 		force.setLength(100);
@@ -108,6 +107,5 @@ public class App extends PortableApplication {
 			clickCnt = 0;
 			break;
 		}
-
 	}
 }
