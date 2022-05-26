@@ -1,13 +1,7 @@
-import java.awt.geom.Ellipse2D;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.awt.geom.Ellipse2D.Float;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
-import ch.hevs.gdx2d.components.physics.utils.PhysicsConstants;
 import ch.hevs.gdx2d.components.physics.primitives.PhysicsCircle;
 import ch.hevs.gdx2d.components.physics.utils.PhysicsScreenBoundaries;
 import ch.hevs.gdx2d.desktop.PortableApplication;
@@ -84,9 +78,7 @@ public class App extends PortableApplication {
 			angle = angle + 180;
 		
 		force.setAngle(angle + 90);
-		//System.out.println(myCane.getVelocity().len());
 		force.setLength(myCane.getVelocity().len() + 0.01f);
-		System.out.println(force);
 
 		Vector2 collisionPoint = CollisionDetection.pointInMeter(whiteBall, myCane);
 		switch (clickCnt) {
