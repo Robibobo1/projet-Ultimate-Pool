@@ -16,7 +16,7 @@ import ch.hevs.gdx2d.lib.GdxGraphics;
 import ch.hevs.gdx2d.lib.physics.PhysicsWorld;
 
 public class App extends PortableApplication {
-	
+
 	int width, height;
 	Vector2 ballPosition;
 	DebugRenderer dbgRenderer;
@@ -24,13 +24,14 @@ public class App extends PortableApplication {
 	PhysicsCircle whiteBall;
 	Cane myCane;
 	int clickCnt = 0;
+	Vector2 force = new Vector2(1, 1);
 
 	App(int width, int height) {
 		super(width, height);
 		this.width = width;
 		this.height = height;
 		ballPosition = new Vector2(this.width / 2, this.height / 2);
-		whiteBall = new PhysicsCircle("White",ballPosition , 20);
+		whiteBall = new PhysicsCircle("White", ballPosition, 20);
 	}
 
 	public static void main(String[] args) {
@@ -50,10 +51,11 @@ public class App extends PortableApplication {
 	public void onGraphicRender(GdxGraphics g) {
 		// TODO Auto-generated method stub
 		g.clear();
-		
+
 		PhysicsWorld.updatePhysics(Gdx.graphics.getDeltaTime());
 		dbgRenderer.render(world, g.getCamera().combined);
-		
+
+		ballPosition = whiteBall.getBodyPosition();
 		canePlacement();
 		myCane.drawCane(g);
 		g.drawFPS();
@@ -68,30 +70,44 @@ public class App extends PortableApplication {
 			clickCnt++;
 		}
 
-		if(button == Input.Buttons.RIGHT)
-		{
+		if (button == Input.Buttons.RIGHT) {
 			clickCnt--;
 		}
 	}
 
 	void canePlacement() {
-		Vector2 mousePosition = new Vector2(Gdx.input.getX(),this.height - Gdx.input.getY());
-		float angle = 90 + (float) Math.toDegrees(Math.atan((mousePosition.y-ballPosition.y)/(mousePosition.x-ballPosition.x)));
-		if(mousePosition.x-ballPosition.x < 0) angle = angle + 180;
 		
+		Vector2 mousePosition = new Vector2(Gdx.input.getX(), this.height - Gdx.input.getY());
+		float angle = 90 + (float) Math.toDegrees(Math.atan((mousePosition.y - ballPosition.y) / (mousePosition.x - ballPosition.x)));
+		if (mousePosition.x - ballPosition.x < 0)
+			angle = angle + 180;
 		
+		myCane.updateHitPoint();
+		
+		force.setAngle(angle + 90);
+		force.setLength(100);
+
+		Vector2 collisionPoint = CollisionDetection.pointInMeter(whiteBall, myCane);
 		switch (clickCnt) {
 		case 0:
-			if(CollisionDetection.test(whiteBall, myCane) == null)  myCane.setPosition(mousePosition);
+			if (collisionPoint == null) {
+				myCane.setPosition(mousePosition);
+			} else {
+				whiteBall.applyBodyForce(force, collisionPoint, CreateLwjglApplication);
+			}
+
 			myCane.setAngle(angle);
 			break;
 		case 1:
-			if(CollisionDetection.test(whiteBall, myCane) == null)  myCane.setPosition(mousePosition);
-			myCane.updateHitPoint();
+			if (collisionPoint == null)
+				myCane.setPosition(mousePosition);
+			else
+				whiteBall.applyBodyForce(force, collisionPoint, CreateLwjglApplication);
 			break;
 		default:
 			clickCnt = 0;
 			break;
 		}
+
 	}
 }
