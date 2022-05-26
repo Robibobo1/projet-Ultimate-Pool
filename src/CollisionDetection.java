@@ -36,7 +36,6 @@ public class CollisionDetection {
 	{
 		float radius = ball.getBodyRadius();		
 		Point middlePoint = new Point((int) ball.getBodyPosition().x,(int) ball.getBodyPosition().y);
-		//Ellipse2D circle = new Ellipse2D.Double(ball.getBodyPosition().x - radius,ball.getBodyPosition().y - radius,2*radius,2*radius);
 		for (int i = 0; i < c.hitPoints.length; i++) {
 			if(c.hitPoints[i].distance(middlePoint) <= radius) 
 			{

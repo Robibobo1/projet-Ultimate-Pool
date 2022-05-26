@@ -58,7 +58,7 @@ public class App extends PortableApplication {
 		ballPosition = whiteBall.getBodyPosition();
 		canePlacement();
 		myCane.drawCane(g);
-		System.out.println(myCane.getVelocity().len());
+		//System.out.println(myCane.debug());
 		g.drawFPS();
 
 	}
@@ -66,7 +66,7 @@ public class App extends PortableApplication {
 	@Override
 	public void onClick(int x, int y, int button) {
 		super.onClick(x, y, button);
-
+		
 		if (button == Input.Buttons.LEFT) {
 			clickCnt++;
 		}
@@ -84,7 +84,9 @@ public class App extends PortableApplication {
 			angle = angle + 180;
 		
 		force.setAngle(angle + 90);
-		force.setLength(100);
+		//System.out.println(myCane.getVelocity().len());
+		force.setLength(myCane.getVelocity().len() + 0.01f);
+		System.out.println(force);
 
 		Vector2 collisionPoint = CollisionDetection.pointInMeter(whiteBall, myCane);
 		switch (clickCnt) {
