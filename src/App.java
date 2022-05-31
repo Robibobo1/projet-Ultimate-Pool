@@ -30,23 +30,15 @@ public class App extends PortableApplication {
 	
 	DebugRenderer dbgRenderer;
 	World world = PhysicsWorld.getInstance();
-	
+	PoolSetup p;
 
-	
-	
-	PhysicsCircle boule;
-	PhysicsStaticBox boiteF;
-	
-	
 	App()
 	{
-		super(600,500);
-		
+		super(1280,720);	
 	}
 	
 	public static void main(String[] args) {
 		new App();
-		
 	}
 
 	@Override
@@ -56,7 +48,8 @@ public class App extends PortableApplication {
 		world.setVelocityThreshold(0.0001f);
 		dbgRenderer = new DebugRenderer();
 		new PhysicsScreenBoundaries(getWindowWidth(), getWindowHeight());
-		PoolSetup();
+		p = new PoolSetup(this);
+		p.createPool();
 		
 	}
 
@@ -79,48 +72,8 @@ public class App extends PortableApplication {
 		super.onClick(x, y, button);
 
 		if (button == Input.Buttons.LEFT)
-			boule.applyBodyForceToCenter(new Vector2(200,0), true);
+			p.boule.applyBodyForceToCenter(new Vector2(200,0), true);
 	}
 	
 	
-void PoolSetup(){
-		
-	boule = new PhysicsCircle("boule", new Vector2(200,250), 12, 10, 0.7f, 0);
-	boiteF = new PhysicsStaticBox(null, new Vector2(300,250), 10, 10);
-	
-	PhysicsStaticLine ligne = new PhysicsStaticLine("boite1", new Vector2(100,100), new Vector2(500,100));
-	PhysicsStaticLine ligne2 = new PhysicsStaticLine("boite2", new Vector2(500,100), new Vector2(500,400));
-	PhysicsStaticLine ligne3 = new PhysicsStaticLine("boite3", new Vector2(500,400), new Vector2(100,400));
-	PhysicsStaticLine ligne4 = new PhysicsStaticLine("boite4", new Vector2(100,400), new Vector2(100,100));
-	
-	FrictionJointDef frictionJointDef = new FrictionJointDef();
-    frictionJointDef.maxForce = 0.05f;
-    frictionJointDef.maxTorque = 0;
-    frictionJointDef.bodyA = boule.getBody();
-    frictionJointDef.bodyB = boiteF.getBody();
-    frictionJointDef.collideConnected = false;
-	
-	
-	
-	world.createJoint(frictionJointDef);
-		ballPlacer(5);
-		
-	}
-	
-	void ballPlacer(int rowLeft) {
-		for (int i = 0; i < rowLeft; i++) {
-			FrictionJointDef frictionJointDef = new FrictionJointDef();
-		    frictionJointDef.maxForce = 0.1f;
-		    frictionJointDef.maxTorque = 0;
-		    frictionJointDef.bodyA = new PhysicsCircle(null, new Vector2(320+(25*rowLeft), 200+12*(5-rowLeft)+25*i), 12, 10, 0.7f, 0).getBody();;
-		    frictionJointDef.bodyB = boiteF.getBody();
-		    frictionJointDef.collideConnected = false;
-		    world.createJoint(frictionJointDef);
-			
-		}
-		if (rowLeft>1) {
-			ballPlacer(rowLeft-1);
-		}
-		
-	}
 }
