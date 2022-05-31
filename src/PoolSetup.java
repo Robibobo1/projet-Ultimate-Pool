@@ -13,6 +13,9 @@ public class PoolSetup {
 	int width = 800;
 	int height = width / 2;
 	
+	int ballDensity = 10;
+	int ballRadius = 15;
+	
 	Point midP = new Point();
 	
 	PhysicsCircle boule;
@@ -33,8 +36,8 @@ public class PoolSetup {
 	
 	void createPool()
 	{
-		boule = new PhysicsCircle("boule", new Vector2(200,250), 12, 10, 0.7f, 0);
-		boiteF = new PhysicsStaticBox(null, new Vector2(300,250), 10, 10);
+		boule = new PhysicsCircle("boule", new Vector2(400,350), 12, 10, 0.7f, 0);
+		boiteF = new PhysicsStaticBox(null, new Vector2(midP.x,midP.y), 10, 10);
 		
 		FrictionJointDef frictionJointDef = new FrictionJointDef();
 	    frictionJointDef.maxForce = 0.05f;
@@ -44,7 +47,7 @@ public class PoolSetup {
 	    frictionJointDef.collideConnected = false;
 	    
 	    a.world.createJoint(frictionJointDef);
-		ballPlacer(5);
+	    placeTriangle(new Point(800,200));
 	}
 	
 	void destroyPool()
@@ -52,20 +55,28 @@ public class PoolSetup {
 		
 	}
 	
-	void ballPlacer(int rowLeft) {
+	
+	void placeTriangle(Point position)
+	{
+		ballPlacer(5,position);
+	}
+	
+	
+	void ballPlacer(int rowLeft,Point position) {
 		for (int i = 0; i < rowLeft; i++) {
 			FrictionJointDef frictionJointDef = new FrictionJointDef();
 		    frictionJointDef.maxForce = 0.1f;
 		    frictionJointDef.maxTorque = 0;
-		    frictionJointDef.bodyA = new PhysicsCircle(null, new Vector2(320+(25*rowLeft), 200+12*(5-rowLeft)+25*i), 12, 10, 0.7f, 0).getBody();;
+		    frictionJointDef.bodyA = new PhysicsCircle(null, new Vector2(position.x +(32*rowLeft), position.y + ballRadius*(5-rowLeft)+ 34*i), ballRadius, ballDensity, 0.7f, 0).getBody();;
 		    frictionJointDef.bodyB = boiteF.getBody();
 		    frictionJointDef.collideConnected = false;
 		    a.world.createJoint(frictionJointDef);
 			
 		}
 		if (rowLeft>1) {
-			ballPlacer(rowLeft-1);
+			ballPlacer(rowLeft-1,position);
 		}
-		
 	}
+	
+	
 }
