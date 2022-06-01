@@ -34,7 +34,7 @@ public class App extends PortableApplication {
 
 	App()
 	{
-		super(1280,720);	
+		super(1920,1080);	
 	}
 	
 	public static void main(String[] args) {
@@ -72,7 +72,7 @@ public class App extends PortableApplication {
 		super.onClick(x, y, button);
 
 		if (button == Input.Buttons.LEFT)
-			p.boule.applyBodyForceToCenter(new Vector2(200,0), true);
+			p.boule.applyBodyForceToCenter(new Vector2(500,0), true);
 	}
 	
 	
