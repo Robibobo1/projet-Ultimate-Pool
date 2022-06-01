@@ -59,6 +59,8 @@ public class App extends PortableApplication {
 		p = new PoolSetup(this);
 		p.createPool();
 		myCane = new Cane(new Vector2(300, 150), 0);
+		p.collisionList.clear();
+		
 	}
 
 	@Override
@@ -89,6 +91,17 @@ public class App extends PortableApplication {
 		if (button == Input.Buttons.RIGHT) {
 			clickCnt--;
 		}
+		
+		if (button == Input.Buttons.MIDDLE)
+		{
+			
+			for(int[] a : p.collisionList)
+			{
+				System.out.print(a[0]);
+				System.out.println("    " + a[1]);
+			}
+			
+		}
 	}
 
 	void canePlacement() {
@@ -99,7 +112,7 @@ public class App extends PortableApplication {
 			angle = angle + 180;
 		
 		force.setAngle(angle + 90);
-		force.setLength(myCane.getVelocity().len() + 0.01f);
+		force.setLength(myCane.getVelocity().len() * 0.5f + 0.01f);
 
 		Vector2 collisionPoint = CollisionDetection.pointInMeter( p.ballArray[0] , myCane);
 		switch (clickCnt) {
