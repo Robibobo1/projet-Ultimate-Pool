@@ -106,7 +106,7 @@ public class PoolSetup {
 				public void collision(AbstractPhysicsObject other, float energy) {
 					int[] collision = new int[2];
 					try {
-						Logger.log(name + " collided " + other.name + " with energy " + energy);
+						//Logger.log(name + " collided " + other.name + " with energy " + energy);
 						collision[0] = Integer.parseInt(name);
 						collision[1] = Integer.parseInt(other.name);
 						collisionList.add(collision);

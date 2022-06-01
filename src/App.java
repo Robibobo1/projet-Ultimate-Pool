@@ -59,7 +59,6 @@ public class App extends PortableApplication {
 		p = new PoolSetup(this);
 		p.createPool();
 		myCane = new Cane(new Vector2(300, 150), 0);
-		p.collisionList.clear();
 		
 	}
 
