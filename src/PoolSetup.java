@@ -11,7 +11,7 @@ public class PoolSetup {
 	App a ;
 	
 	
-	int height = 750;
+	int height = 600;
 	int width = height*2;
 	
 	int ballDensity = 10;

@@ -67,13 +67,6 @@ public class App extends PortableApplication {
 		
 	}
 	
-	@Override
-	public void onClick(int x, int y, int button) {
-		super.onClick(x, y, button);
 
-		if (button == Input.Buttons.LEFT)
-			p.boule.applyBodyForceToCenter(new Vector2(500,0), true);
-	}
-	
 	
 }
