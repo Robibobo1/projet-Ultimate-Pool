@@ -20,6 +20,8 @@ public class PoolSetup {
 	double sidePocket = height*0.11875;
 	double cornerPocketRad = Math.sqrt(Math.pow(height*0.10446, 2)/2);
 	
+	double sideDepth = height*0.04553;
+	
 	int ballNumber = 0;
 	
 	PhysicsCircle[] ballArray = new PhysicsCircle[16];
@@ -57,7 +59,16 @@ public class PoolSetup {
 		
 		//le coté droit du billard, a partir du trou du haut
 		new PhysicsStaticLine("Droite", new Vector2(midP.x - (width/2), (float) (midP.y + height/2 - cornerPocketRad)), new Vector2(midP.x - (width/2),(float) (midP.y - height/2 + cornerPocketRad)));
-							
+		
+		//Side pocket up
+		new PhysicsStaticLine("SP", new Vector2((float) (midP.x + (sidePocket/2)), midP.y + height/2), new Vector2((float) (midP.x + (sidePocket*0.4)), (float) (midP.y + height/2+sideDepth)));
+		new PhysicsStaticLine("SP", new Vector2((float) (midP.x - (sidePocket/2)), midP.y + height/2), new Vector2((float) (midP.x - (sidePocket*0.4)), (float) (midP.y + height/2+sideDepth)));
+	
+		//Side pocket down
+		new PhysicsStaticLine("SP", new Vector2((float) (midP.x + (sidePocket/2)), midP.y - height/2), new Vector2((float) (midP.x + (sidePocket*0.4)), (float) (midP.y - height/2-sideDepth)));
+		new PhysicsStaticLine("SP", new Vector2((float) (midP.x - (sidePocket/2)), midP.y - height/2), new Vector2((float) (midP.x - (sidePocket*0.4)), (float) (midP.y - height/2-sideDepth)));
+	
+		//corner pockets
 	}
 	
 	void createPool()
