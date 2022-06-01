@@ -27,11 +27,11 @@ import ch.hevs.gdx2d.lib.physics.PhysicsWorld;
 
 public class App extends PortableApplication {
 
+	PoolSetup p;
 	int width, height;
 	Vector2 ballPosition;
 	DebugRenderer dbgRenderer;
 	World world = PhysicsWorld.getInstance();
-	PhysicsCircle whiteBall;
 	Cane myCane;
 	int clickCnt = 0;
 	Vector2 force = new Vector2(1, 1);
@@ -41,21 +41,21 @@ public class App extends PortableApplication {
 		this.width = width;
 		this.height = height;
 		ballPosition = new Vector2(this.width / 2, this.height / 2);
-		whiteBall = new PhysicsCircle("White", ballPosition, 20);
 	}
 
 	public static void main(String[] args) {
-		new App(600, 600);
+		new App(1920, 1080);
 	}
 
 	@Override
 	public void onInit() {
 		// TODO Auto-generated method stub
-
+		
 		world.setGravity(new Vector2(0,0));
 		world.setVelocityThreshold(0.0001f);
 		dbgRenderer = new DebugRenderer();
 		new PhysicsScreenBoundaries(getWindowWidth(), getWindowHeight());
+		
 		p = new PoolSetup(this);
 		p.createPool();
 		myCane = new Cane(new Vector2(300, 150), 0);
@@ -69,7 +69,7 @@ public class App extends PortableApplication {
 		PhysicsWorld.updatePhysics(Gdx.graphics.getDeltaTime());
 		dbgRenderer.render(world, g.getCamera().combined);
 		
-		ballPosition = whiteBall.getBodyPosition();
+		ballPosition = p.ballArray[0].getBodyPosition();
 		canePlacement();
 		myCane.drawCane(g);
 		//System.out.println(myCane.debug());
@@ -101,13 +101,13 @@ public class App extends PortableApplication {
 		force.setAngle(angle + 90);
 		force.setLength(myCane.getVelocity().len() + 0.01f);
 
-		Vector2 collisionPoint = CollisionDetection.pointInMeter(whiteBall, myCane);
+		Vector2 collisionPoint = CollisionDetection.pointInMeter( p.ballArray[0] , myCane);
 		switch (clickCnt) {
 		case 0:
 			if (collisionPoint == null) {
 				myCane.setPosition(mousePosition);
 			} else {
-				whiteBall.applyBodyForce(force, collisionPoint, CreateLwjglApplication);
+				p.ballArray[0].applyBodyForce(force, collisionPoint, CreateLwjglApplication);
 			}
 
 			myCane.setAngle(angle);
@@ -116,7 +116,7 @@ public class App extends PortableApplication {
 			if (collisionPoint == null)
 				myCane.setPosition(mousePosition);
 			else
-				whiteBall.applyBodyForce(force, collisionPoint, CreateLwjglApplication);
+				p.ballArray[0].applyBodyForce(force, collisionPoint, CreateLwjglApplication);
 			break;
 		default:
 			clickCnt = 0;
