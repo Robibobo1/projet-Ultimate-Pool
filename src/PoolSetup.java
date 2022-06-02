@@ -117,7 +117,7 @@ public class PoolSetup {
 			};
 			ballArray[ballNumber].enableCollisionListener();
 			FrictionJointDef frictionJointDef = new FrictionJointDef();
-			frictionJointDef.maxForce = 0.1f;
+			frictionJointDef.maxForce = 0.07f;
 			frictionJointDef.maxTorque = 0;
 			frictionJointDef.bodyA = ballArray[ballNumber].getBody();
 			frictionJointDef.bodyB = boiteF.getBody();
@@ -128,6 +128,19 @@ public class PoolSetup {
 		if (rowLeft > 1) {
 			ballPlacer(rowLeft - 1, position);
 		}
+	}
+	
+	String debugCollisionList() 
+	{
+		String out = "";
+		for(int[] a : collisionList)
+		{
+			out += a[0];
+			out += " with ";
+			out += a[1];
+			out += "  -  ";
+		}
+		return out;
 	}
 
 }

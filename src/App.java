@@ -36,7 +36,7 @@ public class App extends PortableApplication {
 		Normal, Double, Place
 	}
 
-	Mode gameMode = Mode.Double;
+	Mode gameMode = Mode.Normal;
 	
 	int roundMade = 0;
 	boolean playerTurn = false;
@@ -92,14 +92,14 @@ public class App extends PortableApplication {
 			myCane.drawCane(g);
 			break;
 		case Wait:
-
+			waitForSomething();
 			break;
 		default:
 			break;
 		}
 		// System.out.println(myCane.debug());
 		g.drawFPS();
-		g.drawString(400, 100, "" + roundEnded());
+		g.drawString(20, 100, "" + playerTurn + " " + gameMode.name());
 	}
 
 	@Override
@@ -117,10 +117,6 @@ public class App extends PortableApplication {
 
 		if (button == Input.Buttons.MIDDLE) {
 
-			for (int[] a : p.collisionList) {
-				System.out.print(a[0]);
-				System.out.println("    " + a[1]);
-			}
 
 		}
 	}
@@ -167,13 +163,17 @@ public class App extends PortableApplication {
 	}
 
 	void play(boolean player, Mode gameMode) {
+		
 		if(gameMode == Mode.Place)
 		{
 			
 		}
 		else
 		{
-			if(canePlacement()) stateNow = State.Wait;
+			if(canePlacement()) {
+				p.collisionList.clear();
+				stateNow = State.Wait;
+			}
 		}
 		
 	}
@@ -190,7 +190,28 @@ public class App extends PortableApplication {
 	}
 
 	void waitForSomething() {
-
+		if(roundEnded())
+		{
+			boolean didFault = checkForFault();
+			stateNow = State.Play;
+			if(gameMode == Mode.Double && didFault == false)
+			{
+				gameMode = Mode.Normal;
+				return;
+			}
+			playerTurn = !playerTurn;
+		}
+	}
+	
+	boolean checkForFault()
+	{
+		if(p.collisionList.isEmpty())
+		{
+			System.out.println("swag");
+			gameMode = Mode.Double;
+			return true;
+		}
+		return false;
 	}
 	
 
