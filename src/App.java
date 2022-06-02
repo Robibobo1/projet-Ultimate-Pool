@@ -38,6 +38,8 @@ public class App extends PortableApplication {
 
 	Mode gameMode = Mode.Normal;
 	
+	
+	
 	int roundMade = 0;
 	boolean playerTurn = false;
 	PoolSetup p;
@@ -99,7 +101,7 @@ public class App extends PortableApplication {
 		}
 		// System.out.println(myCane.debug());
 		g.drawFPS();
-		g.drawString(20, 100, "" + playerTurn + " " + gameMode.name());
+		g.drawString(20, 100, "" + playerTurn + " " + gameMode.name()  + " "+ p.debugCollisionList());
 	}
 
 	@Override
@@ -175,7 +177,6 @@ public class App extends PortableApplication {
 				stateNow = State.Wait;
 			}
 		}
-		
 	}
 
 	boolean roundEnded() {
@@ -190,6 +191,9 @@ public class App extends PortableApplication {
 	}
 
 	void waitForSomething() {
+		
+		checkBallInHole();
+		
 		if(roundEnded())
 		{
 			boolean didFault = checkForFault();
@@ -207,11 +211,25 @@ public class App extends PortableApplication {
 	{
 		if(p.collisionList.isEmpty())
 		{
-			System.out.println("swag");
 			gameMode = Mode.Double;
 			return true;
 		}
 		return false;
+	}
+	
+	void checkBallInHole()
+	{
+		if(p.lastCollision != null)
+		{
+			for (int i = 20; i < 26; i++) {
+				if(p.lastCollision[0] == i)
+				{
+					p.ballArray[p.lastCollision[1]].destroy();
+					p.lastCollision = null;	
+					return;
+				}
+			}
+		}
 	}
 	
 

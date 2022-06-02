@@ -14,6 +14,7 @@ public class PoolSetup {
 	App a;
 
 	Vector<int[]> collisionList = new Vector<int[]>();
+	int[] lastCollision = null;
 
 	int height = 600;
 	int width = height * 2;
@@ -30,8 +31,6 @@ public class PoolSetup {
 
 	Point midP = new Point();
 
-	PhysicsCircle boule;
-
 	PhysicsStaticBox boiteF;
 
 	PoolSetup(App a) {
@@ -44,7 +43,8 @@ public class PoolSetup {
 //		PhysicsStaticLine ligne2 = new PhysicsStaticLine("murHaut", new Vector2(midP.x - width/2,midP.y + height/2), new Vector2(midP.x + width/2,midP.y + height/2));
 //		PhysicsStaticLine ligne3 = new PhysicsStaticLine("murDroit", new Vector2(midP.x + width/2,midP.y + height/2), new Vector2(midP.x + width/2,midP.y - height/2));
 //		PhysicsStaticLine ligne4 = new PhysicsStaticLine("murBas", new Vector2(midP.x + width/2,midP.y - height/2), new Vector2(midP.x - width/2,midP.y - height/2));
-
+		
+		
 		// On commence par le haut du billard, a partir du trou sur le coté
 		new PhysicsStaticLine("Haut droite", new Vector2((float) (midP.x + (sidePocket / 2)), midP.y + height / 2),
 				new Vector2((float) (midP.x + width / 2 - cornerPocketRad), midP.y + height / 2));
@@ -58,26 +58,53 @@ public class PoolSetup {
 				new Vector2((float) (midP.x - width / 2 + cornerPocketRad), midP.y - height / 2));
 
 		// le coté droit du billard, a partir du trou du haut
-		new PhysicsStaticLine("Droite", new Vector2(midP.x + (width / 2), (float) (midP.y + height / 2 - cornerPocketRad)),
+		new PhysicsStaticLine("Droite",
+				new Vector2(midP.x + (width / 2), (float) (midP.y + height / 2 - cornerPocketRad)),
 				new Vector2(midP.x + (width / 2), (float) (midP.y - height / 2 + cornerPocketRad)));
 
 		// le coté droit du billard, a partir du trou du haut
-		new PhysicsStaticLine("Gauche", new Vector2(midP.x - (width / 2), (float) (midP.y + height / 2 - cornerPocketRad)),
+		new PhysicsStaticLine("Gauche",
+				new Vector2(midP.x - (width / 2), (float) (midP.y + height / 2 - cornerPocketRad)),
 				new Vector2(midP.x - (width / 2), (float) (midP.y - height / 2 + cornerPocketRad)));
 
 	}
 
 	void createPool() {
-		boule = new PhysicsCircle("0", new Vector2((int) (midP.x - (0.25 * width)), (int) (midP.y)), (float) ballRadius,
-				10, 0.7f, 0);
-		ballArray[0] = boule;
-
+		new PhysicsStaticBox("20",new Vector2(1500,700),5,5) {
+			public void collision(AbstractPhysicsObject other, float energy) {
+				int[] collision = new int[2];
+				try {
+					Logger.log(name + " collided " + other.name + " with energy " + energy);
+					collision[0] = Integer.parseInt(name);
+					collision[1] = Integer.parseInt(other.name);
+					lastCollision = collision;
+					collisionList.add(collision);
+				} catch (Exception e) {
+					
+				}
+			}
+		};
+		ballArray[0] = new PhysicsCircle("0", new Vector2((int) (midP.x - (0.25 * width)), (int) (midP.y)),
+				(float) ballRadius, 10, 0.7f, 0) {
+			public void collision(AbstractPhysicsObject other, float energy) {
+				int[] collision = new int[2];
+				try {
+					Logger.log(name + " collided " + other.name + " with energy " + energy);
+					collision[0] = Integer.parseInt(name);
+					collision[1] = Integer.parseInt(other.name);
+					collisionList.add(collision);
+				} catch (Exception e) {
+					
+				}
+			}
+		};
+		ballArray[0].enableCollisionListener();
 		boiteF = new PhysicsStaticBox(null, new Vector2(midP.x, midP.y), 10, 10);
 
 		FrictionJointDef frictionJointDef = new FrictionJointDef();
 		frictionJointDef.maxForce = 0.05f;
 		frictionJointDef.maxTorque = 0;
-		frictionJointDef.bodyA = boule.getBody();
+		frictionJointDef.bodyA = ballArray[0].getBody();
 		frictionJointDef.bodyB = boiteF.getBody();
 		frictionJointDef.collideConnected = false;
 
@@ -101,21 +128,21 @@ public class PoolSetup {
 			ballArray[ballNumber] = new PhysicsCircle("" + ballNumber, // Name
 					new Vector2((float) (position.x + 1 + (ballRadius * 2 * rowLeft)), // Position x
 							(float) (position.y + 1 + ballRadius * (5 - rowLeft) + ballRadius * 2 * i)), // Position y
-					(float) ballRadius, ballDensity, 0.7f, 0) // Radius, density, restitution and friction
-			{
-				public void collision(AbstractPhysicsObject other, float energy) {
-					int[] collision = new int[2];
-					try {
-						//Logger.log(name + " collided " + other.name + " with energy " + energy);
-						collision[0] = Integer.parseInt(name);
-						collision[1] = Integer.parseInt(other.name);
-						collisionList.add(collision);
-					} catch (Exception e) {
-						
-					}
-				}
-			};
-			ballArray[ballNumber].enableCollisionListener();
+					(float) ballRadius, ballDensity, 0.7f, 0); // Radius, density, restitution and friction
+//			{
+//				public void collision(AbstractPhysicsObject other, float energy) {
+//					int[] collision = new int[2];
+//					try {
+//						//Logger.log(name + " collided " + other.name + " with energy " + energy);
+//						collision[0] = Integer.parseInt(name);
+//						collision[1] = Integer.parseInt(other.name);
+//						collisionList.add(collision);
+//					} catch (Exception e) {
+//						
+//					}
+//				}
+//			};
+			// ballArray[ballNumber].enableCollisionListener();
 			FrictionJointDef frictionJointDef = new FrictionJointDef();
 			frictionJointDef.maxForce = 0.07f;
 			frictionJointDef.maxTorque = 0;
@@ -129,12 +156,10 @@ public class PoolSetup {
 			ballPlacer(rowLeft - 1, position);
 		}
 	}
-	
-	String debugCollisionList() 
-	{
+
+	String debugCollisionList() {
 		String out = "";
-		for(int[] a : collisionList)
-		{
+		for (int[] a : collisionList) {
 			out += a[0];
 			out += " with ";
 			out += a[1];
