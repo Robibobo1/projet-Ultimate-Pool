@@ -34,11 +34,17 @@ public class CollisionDetection {
 		for (int i = 0; i < c.hitPoints.length; i++) {
 			if(c.hitPoints[i].distance(middlePoint) <= radius) 
 			{
-				System.out.println("Collision");
+				//System.out.println("Collision");
 				return c.hitPoints[i];
 			}
 		}
 		return null;
+	}
+	
+	static boolean hasCollision(PhysicsCircle ball,Cane c)
+	{
+		if(getPoint(ball,c) == null) return false;
+		else return true;
 	}
 	
 }
