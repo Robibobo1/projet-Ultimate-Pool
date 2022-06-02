@@ -26,6 +26,19 @@ import ch.hevs.gdx2d.lib.physics.PhysicsWorld;
 
 public class App extends PortableApplication {
 
+	enum State {
+		Play, Wait, Fault, Destroy, End
+	}
+
+	State stateNow = State.Play;
+
+	enum Mode {
+		Normal, Double, Place
+	}
+
+	Mode gameMode = Mode.Normal;
+
+	boolean playerTurn = false;
 	PoolSetup p;
 	int width, height;
 	Vector2 ballPosition;
@@ -70,11 +83,22 @@ public class App extends PortableApplication {
 		dbgRenderer.render(world, g.getCamera().combined);
 
 		ballPosition = p.ballArray[0].getBodyPosition();
-		canePlacement();
-		myCane.drawCane(g);
+
+		switch (stateNow) {
+		case Play:
+			play(playerTurn, gameMode);
+			canePlacement();
+			myCane.drawCane(g);
+			break;
+		case Wait:
+
+			break;
+		default:
+			break;
+		}
 		// System.out.println(myCane.debug());
 		g.drawFPS();
-
+		g.drawString(400, 100, "a");
 	}
 
 	@Override
@@ -103,11 +127,13 @@ public class App extends PortableApplication {
 	void canePlacement() {
 
 		Vector2 mousePosition = new Vector2(Gdx.input.getX(), this.height - Gdx.input.getY());
-		float angle = 90 + (float) Math.toDegrees(Math.atan((mousePosition.y - ballPosition.y) / (mousePosition.x - ballPosition.x)));
-		if (mousePosition.x - ballPosition.x < 0) angle = angle + 180;
+		float angle = 90 + (float) Math
+				.toDegrees(Math.atan((mousePosition.y - ballPosition.y) / (mousePosition.x - ballPosition.x)));
+		if (mousePosition.x - ballPosition.x < 0)
+			angle = angle + 180;
 		force.setAngle(angle + 90);
-		force.setLength(myCane.getVelocity().len() * 0.3f + 0.01f);
-
+		
+		//force.setLength(myCane.getVelocity().len() + 0.01f);
 		Vector2 collisionPoint = CollisionDetection.pointInMeter(p.ballArray[0], myCane);
 		switch (clickCnt) {
 		case 0:
@@ -119,15 +145,38 @@ public class App extends PortableApplication {
 			break;
 		case 2:
 			double slope = (myCane.hitPoints[1].y - myCane.position.y) / (myCane.hitPoints[1].x - myCane.position.x);
-			float offset = (float) (myCane.position.y -slope * myCane.position.x);
-			float yLinearValue = (float) (slope * mousePosition.x + offset); 
-			Vector2 linearPosition = new Vector2(mousePosition.x,yLinearValue);
+			float offset = (float) (myCane.position.y - slope * myCane.position.x);
+			float yLinearValue = (float) (slope * mousePosition.x + offset);
+			Vector2 linearPosition = new Vector2(mousePosition.x, yLinearValue);
 			myCane.setPosition(linearPosition);
-			if(collisionPoint != null) p.ballArray[0].applyBodyForce(force, collisionPoint, CreateLwjglApplication);
+			if (collisionPoint != null) {
+				float lenght = myCane.getVelocity().len() / 1;
+				force.setLength(lenght);
+				force.setAngle(angle + 90);
+				p.ballArray[0].applyBodyForce(force, collisionPoint, CreateLwjglApplication);
+				clickCnt = 0;
+				playerTurn = !playerTurn;
+				stateNow = State.Wait;
+			}
 			break;
 		default:
 			clickCnt = 0;
 			break;
 		}
 	}
+
+	void play(boolean player, Mode gameMode) {
+		
+		canePlacement();
+	}
+
+	boolean roundEnded() {
+		return false;
+	}
+
+	void waitForSomething() {
+
+	}
+	
+
 }
