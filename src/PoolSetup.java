@@ -32,6 +32,7 @@ public class PoolSetup {
 	
 	PhysicsStaticBox boiteF;
 	
+	PhysicsStaticBox box1;
 	
 	
 	PoolSetup(App a)
@@ -76,10 +77,20 @@ public class PoolSetup {
 		new PhysicsStaticLine("CP", new Vector2((float) (midP.x - width/2 + cornerPocketRad),midP.y - height/2), new Vector2((float) (midP.x - width/2 + cornerPocketRad-sideDepth),(float) (midP.y - height/2-sideDepth)));
 
 		new PhysicsStaticLine("CP", new Vector2(midP.x + (width/2),(float) (midP.y - height/2 + cornerPocketRad)), new Vector2((float) (midP.x + (width/2)+sideDepth),(float) (midP.y - height/2 + cornerPocketRad-sideDepth)));
-		new PhysicsStaticLine("Bas, droite", new Vector2((float) (midP.x + width/2 - cornerPocketRad),midP.y - height/2), new Vector2((float) (midP.x + width/2 - cornerPocketRad+sideDepth),(float) (midP.y - height/2-sideDepth)));
+		new PhysicsStaticLine("CP", new Vector2((float) (midP.x + width/2 - cornerPocketRad),midP.y - height/2), new Vector2((float) (midP.x + width/2 - cornerPocketRad+sideDepth),(float) (midP.y - height/2-sideDepth)));
 		
-		new PhysicsStaticLine("Haut, gauche", new Vector2((float) (midP.x - width/2 + cornerPocketRad),midP.y + height/2), new Vector2((float) (midP.x - width/2 + cornerPocketRad-sideDepth),(float) (midP.y + height/2+sideDepth)));
-		new PhysicsStaticLine("Gauche", new Vector2(midP.x - (width/2), (float) (midP.y + height/2 - cornerPocketRad)), new Vector2((float) (midP.x - (width/2)-sideDepth), (float) (midP.y + height/2 - cornerPocketRad+sideDepth)));
+		new PhysicsStaticLine("CP", new Vector2((float) (midP.x - width/2 + cornerPocketRad),midP.y + height/2), new Vector2((float) (midP.x - width/2 + cornerPocketRad-sideDepth),(float) (midP.y + height/2+sideDepth)));
+		new PhysicsStaticLine("CP", new Vector2(midP.x - (width/2), (float) (midP.y + height/2 - cornerPocketRad)), new Vector2((float) (midP.x - (width/2)-sideDepth), (float) (midP.y + height/2 - cornerPocketRad+sideDepth)));
+		
+		//Collision box
+		 new PhysicsStaticBox(null, new Vector2(midP.x, (float) (midP.y + (height/2)+0.75*sidePocket)), (float) sidePocket, (float) sidePocket).setSensor(true);
+		 new PhysicsStaticBox(null, new Vector2(midP.x, (float) (midP.y - (height/2)-0.75*sidePocket)), (float) sidePocket, (float) sidePocket).setSensor(true);
+
+		 new PhysicsStaticBox(null, new Vector2((float) (midP.x-width/2-0.75*sideDepth), (float) (midP.y - (height/2)-0.75*sideDepth)), (float) sidePocket, (float) sidePocket,(float) (Math.PI/4)).setSensor(true);
+		 new PhysicsStaticBox(null, new Vector2((float) (midP.x-width/2-0.75*sideDepth), (float) (midP.y + (height/2)+0.75*sideDepth)), (float) sidePocket, (float) sidePocket,(float) (Math.PI/4)).setSensor(true);
+		 new PhysicsStaticBox(null, new Vector2((float) (midP.x+width/2+0.75*sideDepth), (float) (midP.y - (height/2)-0.75*sideDepth)), (float) sidePocket, (float) sidePocket,(float) (Math.PI/4)).setSensor(true);
+		 new PhysicsStaticBox(null, new Vector2((float) (midP.x+width/2+0.75*sideDepth), (float) (midP.y + (height/2)+0.75*sideDepth)), (float) sidePocket, (float) sidePocket,(float) (Math.PI/4)).setSensor(true);
+
 
 	}
 	
