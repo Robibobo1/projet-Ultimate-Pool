@@ -36,8 +36,9 @@ public class App extends PortableApplication {
 		Normal, Double, Place
 	}
 
-	Mode gameMode = Mode.Normal;
-
+	Mode gameMode = Mode.Double;
+	
+	int roundMade = 0;
 	boolean playerTurn = false;
 	PoolSetup p;
 	int width, height;
@@ -98,7 +99,7 @@ public class App extends PortableApplication {
 		}
 		// System.out.println(myCane.debug());
 		g.drawFPS();
-		g.drawString(400, 100, "a");
+		g.drawString(400, 100, "" + roundEnded());
 	}
 
 	@Override
@@ -124,7 +125,7 @@ public class App extends PortableApplication {
 		}
 	}
 
-	void canePlacement() {
+	boolean canePlacement() {
 
 		Vector2 mousePosition = new Vector2(Gdx.input.getX(), this.height - Gdx.input.getY());
 		float angle = 90 + (float) Math
@@ -150,28 +151,42 @@ public class App extends PortableApplication {
 			Vector2 linearPosition = new Vector2(mousePosition.x, yLinearValue);
 			myCane.setPosition(linearPosition);
 			if (collisionPoint != null) {
-				float lenght = myCane.getVelocity().len() / 1;
+				float lenght = myCane.getVelocity().len() / 3;
 				force.setLength(lenght);
 				force.setAngle(angle + 90);
 				p.ballArray[0].applyBodyForce(force, collisionPoint, CreateLwjglApplication);
 				clickCnt = 0;
-				playerTurn = !playerTurn;
-				stateNow = State.Wait;
+				return true;
 			}
 			break;
 		default:
 			clickCnt = 0;
 			break;
 		}
+		return false;
 	}
 
 	void play(boolean player, Mode gameMode) {
+		if(gameMode == Mode.Place)
+		{
+			
+		}
+		else
+		{
+			if(canePlacement()) stateNow = State.Wait;
+		}
 		
-		canePlacement();
 	}
 
 	boolean roundEnded() {
-		return false;
+		for(PhysicsCircle c : p.ballArray)
+		{
+			if(c.getBodyLinearVelocity().len() > 0.001f)
+			{
+				return false;
+			}
+		}
+		return true;
 	}
 
 	void waitForSomething() {
