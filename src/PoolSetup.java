@@ -57,8 +57,8 @@ public class PoolSetup {
 		//le coté droit du billard, a partir du trou du haut
 		new PhysicsStaticLine("Droite", new Vector2(midP.x + (width/2), (float) (midP.y + height/2 - cornerPocketRad)), new Vector2(midP.x + (width/2),(float) (midP.y - height/2 + cornerPocketRad)));
 		
-		//le coté droit du billard, a partir du trou du haut
-		new PhysicsStaticLine("Droite", new Vector2(midP.x - (width/2), (float) (midP.y + height/2 - cornerPocketRad)), new Vector2(midP.x - (width/2),(float) (midP.y - height/2 + cornerPocketRad)));
+		//le coté gauche du billard, a partir du trou du haut
+		new PhysicsStaticLine("Gauche", new Vector2(midP.x - (width/2), (float) (midP.y + height/2 - cornerPocketRad)), new Vector2(midP.x - (width/2),(float) (midP.y - height/2 + cornerPocketRad)));
 		
 		//Side pocket up
 		new PhysicsStaticLine("SP", new Vector2((float) (midP.x + (sidePocket/2)), midP.y + height/2), new Vector2((float) (midP.x + (sidePocket*0.4)), (float) (midP.y + height/2+sideDepth)));
@@ -67,8 +67,20 @@ public class PoolSetup {
 		//Side pocket down
 		new PhysicsStaticLine("SP", new Vector2((float) (midP.x + (sidePocket/2)), midP.y - height/2), new Vector2((float) (midP.x + (sidePocket*0.4)), (float) (midP.y - height/2-sideDepth)));
 		new PhysicsStaticLine("SP", new Vector2((float) (midP.x - (sidePocket/2)), midP.y - height/2), new Vector2((float) (midP.x - (sidePocket*0.4)), (float) (midP.y - height/2-sideDepth)));
-	
+		
 		//corner pockets
+		new PhysicsStaticLine("CP", new Vector2((float) (midP.x + width/2 - cornerPocketRad),midP.y + height/2), new Vector2((float) (midP.x + width/2 - cornerPocketRad+sideDepth),(float)(midP.y + height/2+sideDepth)));
+		new PhysicsStaticLine("CP", new Vector2(midP.x + (width/2) ,(float) (midP.y + height/2 - cornerPocketRad)), new Vector2((float) (midP.x + (width/2)+sideDepth) ,(float) (midP.y + height/2 - cornerPocketRad+sideDepth)));
+	
+		new PhysicsStaticLine("CP", new Vector2(midP.x - (width/2),(float) (midP.y - height/2 + cornerPocketRad)), new Vector2((float) (midP.x - (width/2)-sideDepth),(float) (midP.y - height/2 + cornerPocketRad-sideDepth)));
+		new PhysicsStaticLine("CP", new Vector2((float) (midP.x - width/2 + cornerPocketRad),midP.y - height/2), new Vector2((float) (midP.x - width/2 + cornerPocketRad-sideDepth),(float) (midP.y - height/2-sideDepth)));
+
+		new PhysicsStaticLine("CP", new Vector2(midP.x + (width/2),(float) (midP.y - height/2 + cornerPocketRad)), new Vector2((float) (midP.x + (width/2)+sideDepth),(float) (midP.y - height/2 + cornerPocketRad-sideDepth)));
+		new PhysicsStaticLine("Bas, droite", new Vector2((float) (midP.x + width/2 - cornerPocketRad),midP.y - height/2), new Vector2((float) (midP.x + width/2 - cornerPocketRad+sideDepth),(float) (midP.y - height/2-sideDepth)));
+		
+		new PhysicsStaticLine("Haut, gauche", new Vector2((float) (midP.x - width/2 + cornerPocketRad),midP.y + height/2), new Vector2((float) (midP.x - width/2 + cornerPocketRad-sideDepth),(float) (midP.y + height/2+sideDepth)));
+		new PhysicsStaticLine("Gauche", new Vector2(midP.x - (width/2), (float) (midP.y + height/2 - cornerPocketRad)), new Vector2((float) (midP.x - (width/2)-sideDepth), (float) (midP.y + height/2 - cornerPocketRad+sideDepth)));
+
 	}
 	
 	void createPool()
