@@ -66,28 +66,28 @@ public class PoolSetup {
 
 		// Collision box
 		new Hole("21", new Vector2(midP.x, (float) (midP.y + (height / 2) + 0.75 * sidePocket)), (float) sidePocket,
-				(float) sidePocket);
+				(float) sidePocket,this);
 		new Hole("24", new Vector2(midP.x, (float) (midP.y - (height / 2) - 0.75 * sidePocket)), (float) sidePocket,
-				(float) sidePocket);
+				(float) sidePocket,this);
 
 		new Hole("20",
 				new Vector2((float) (midP.x - width / 2 - 0.75 * sideDepth),
 						(float) (midP.y - (height / 2) - 0.75 * sideDepth)),
-				(float) sidePocket, (float) sidePocket, (float) (Math.PI / 4));
+				(float) sidePocket, (float) sidePocket, (float) (Math.PI / 4),this);
 		new Hole("22",
 				new Vector2((float) (midP.x - width / 2 - 0.75 * sideDepth),
 						(float) (midP.y + (height / 2) + 0.75 * sideDepth)),
-				(float) sidePocket, (float) sidePocket, (float) (Math.PI / 4));
+				(float) sidePocket, (float) sidePocket, (float) (Math.PI / 4),this);
 
 		new Hole("23",
 				new Vector2((float) (midP.x + width / 2 + 0.75 * sideDepth),
 						(float) (midP.y - (height / 2) - 0.75 * sideDepth)),
-				(float) sidePocket, (float) sidePocket, (float) (Math.PI / 4));
+				(float) sidePocket, (float) sidePocket, (float) (Math.PI / 4),this);
 
 		new Hole("25",
 				new Vector2((float) (midP.x + width / 2 + 0.75 * sideDepth),
 						(float) (midP.y + (height / 2) + 0.75 * sideDepth)),
-				(float) sidePocket, (float) sidePocket, (float) (Math.PI / 4));
+				(float) sidePocket, (float) sidePocket, (float) (Math.PI / 4),this);
 
 		FrictionJointDef frictionJointDef = new FrictionJointDef();
 		frictionJointDef.maxForce = 0.2f;
