@@ -53,9 +53,11 @@ public class PoolSetup {
 			public void collision(AbstractPhysicsObject other, float energy) {
 				int[] collision = new int[2];
 				try {
-					Logger.log(name + " collided " + other.name + " with energy " + energy);
+					//Logger.log(name + " collided " + other.name + " with energy " + energy);
 					collision[0] = Integer.parseInt(name);
 					collision[1] = Integer.parseInt(other.name);
+					lastCollision = collision;
+					collisionList.add(collision);
 				} catch (Exception e) {
 
 				}
@@ -91,7 +93,7 @@ public class PoolSetup {
 
 		FrictionJointDef frictionJointDef = new FrictionJointDef();
 		frictionJointDef.maxForce = 0.2f;
-		frictionJointDef.maxTorque = 0.05f;
+		frictionJointDef.maxTorque = 0.1f;
 		frictionJointDef.bodyA = ballArray[0].getBody();
 		frictionJointDef.bodyB = boiteF.getBody();
 		frictionJointDef.collideConnected = false;
@@ -124,8 +126,8 @@ public class PoolSetup {
 							(float) (position.y + 1 + ballRadius * (5 - rowLeft) + ballRadius * 2 * i)), // Position y
 					(float) ballRadius, ballDensity, 0.7f, 0); // Radius, density, restitution and friction
 			FrictionJointDef frictionJointDef = new FrictionJointDef();
-			frictionJointDef.maxForce = 0.07f;
-			frictionJointDef.maxTorque = 0;
+			frictionJointDef.maxForce = 0.2f;
+			frictionJointDef.maxTorque = 0.1f;
 			frictionJointDef.bodyA = ballArray[ballNumber].getBody();
 			frictionJointDef.bodyB = boiteF.getBody();
 			frictionJointDef.collideConnected = false;

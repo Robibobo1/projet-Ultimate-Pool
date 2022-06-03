@@ -52,7 +52,7 @@ public class App extends PortableApplication {
 	Vector2 force = new Vector2(1, 1);
 
 	App(int width, int height) {
-		super(width, height, true);
+		super(width, height, false);
 		this.width = width;
 		this.height = height;
 		ballPosition = new Vector2(this.width / 2, this.height / 2);
@@ -102,7 +102,7 @@ public class App extends PortableApplication {
 		}
 		// System.out.println(myCane.debug());
 		g.drawFPS();
-		g.drawString(20, 100, "" + playerTurn + " " + gameMode.name()  + " "+ p.debugCollisionList() + " ");
+		g.drawString(20, 100, "" + playerTurn + " " + gameMode.name()  + " "+ p.debugCollisionList() + " " + stateNow.name());
 	}
 
 	@Override
@@ -132,8 +132,8 @@ public class App extends PortableApplication {
 			angle = angle + 180;
 		force.setAngle(angle + 90);
 		
-		//force.setLength(myCane.getVelocity().len() + 0.01f);
 		Vector2 collisionPoint = CollisionDetection.pointInMeter(p.ballArray[0], myCane);
+		
 		switch (clickCnt) {
 		case 0:
 			myCane.setPosition(mousePosition);
@@ -141,6 +141,14 @@ public class App extends PortableApplication {
 			break;
 		case 1:
 			myCane.setPosition(mousePosition);
+			if (collisionPoint != null) {
+				float lenght = myCane.getVelocity().len() / 3;
+				force.setLength(lenght);
+				force.setAngle(angle + 90);
+				p.ballArray[0].applyBodyForce(force, collisionPoint, CreateLwjglApplication);
+				clickCnt = 0;
+				return true;
+			}
 			break;
 		case 2:
 			double slope = (myCane.hitPoints[1].y - myCane.position.y) / (myCane.hitPoints[1].x - myCane.position.x);
@@ -222,9 +230,20 @@ public class App extends PortableApplication {
 		if(p.lastCollision != null)
 		{
 			for (int i = 20; i < 26; i++) {
-				if(p.lastCollision[0] == i)
+				if(p.lastCollision[0] == i) // Balle normale dans trou
 				{
+					p.ballArray[p.lastCollision[1]].setBodyLinearVelocity(0, 0);
 					p.ballArray[p.lastCollision[1]].destroy();
+					p.lastCollision = null;	
+					return;
+				}
+			}
+			
+			if(p.lastCollision[0] == 0) // Balle blanche dans trou
+			{
+				if(p.lastCollision[1] >= 20)
+				{
+					p.ballArray[0].destroy();
 					p.lastCollision = null;	
 					return;
 				}
