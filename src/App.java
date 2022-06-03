@@ -52,10 +52,11 @@ public class App extends PortableApplication {
 	Vector2 force = new Vector2(1, 1);
 
 	App(int width, int height) {
-		super(width, height);
+		super(width, height, true);
 		this.width = width;
 		this.height = height;
 		ballPosition = new Vector2(this.width / 2, this.height / 2);
+		
 	}
 
 	public static void main(String[] args) {
@@ -81,7 +82,7 @@ public class App extends PortableApplication {
 	public void onGraphicRender(GdxGraphics g) {
 		// TODO Auto-generated method stub
 		g.clear();
-
+		
 		PhysicsWorld.updatePhysics(Gdx.graphics.getDeltaTime());
 		dbgRenderer.render(world, g.getCamera().combined);
 
@@ -118,7 +119,6 @@ public class App extends PortableApplication {
 		}
 
 		if (button == Input.Buttons.MIDDLE) {
-
 
 		}
 	}
