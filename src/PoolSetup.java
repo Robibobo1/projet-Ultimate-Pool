@@ -47,9 +47,19 @@ public class PoolSetup {
 	void createPool() {
 		
 		buildWall();
+		buildPocket();
 		
-		ballArray[0] = new PhysicsCircle("0", new Vector2((int) (midP.x - (0.25 * width)), (int) (midP.y)),
-				(float) ballRadius, 10, 0.7f, 0) {
+		boiteF = new PhysicsStaticBox(null, new Vector2(midP.x, midP.y), 10, 10);
+		
+		placeWhite( new Vector2((int) (midP.x - (0.25 * width)), (int) (midP.y)));
+		
+		placeTriangle(new Point((int) (midP.x + (0.25 * width)), (int) (midP.y - 4 * ballRadius)));
+
+	}
+	
+	void placeWhite(Vector2 position)
+	{
+		ballArray[0] = new PhysicsCircle("0", position,(float) ballRadius, 10, 0.7f, 0) {
 			public void collision(AbstractPhysicsObject other, float energy) {
 				int[] collision = new int[2];
 				try {
@@ -63,44 +73,14 @@ public class PoolSetup {
 				}
 			}
 		};
-
-		boiteF = new PhysicsStaticBox(null, new Vector2(midP.x, midP.y), 10, 10);
-
-		// Collision box
-		new Hole("21", new Vector2(midP.x, (float) (midP.y + (height / 2) + 0.75 * sidePocket)), (float) sidePocket,
-				(float) sidePocket,this);
-		new Hole("24", new Vector2(midP.x, (float) (midP.y - (height / 2) - 0.75 * sidePocket)), (float) sidePocket,
-				(float) sidePocket,this);
-
-		new Hole("20",
-				new Vector2((float) (midP.x - width / 2 - 0.75 * sideDepth),
-						(float) (midP.y - (height / 2) - 0.75 * sideDepth)),
-				(float) sidePocket, (float) sidePocket, (float) (Math.PI / 4),this);
-		new Hole("22",
-				new Vector2((float) (midP.x - width / 2 - 0.75 * sideDepth),
-						(float) (midP.y + (height / 2) + 0.75 * sideDepth)),
-				(float) sidePocket, (float) sidePocket, (float) (Math.PI / 4),this);
-
-		new Hole("23",
-				new Vector2((float) (midP.x + width / 2 + 0.75 * sideDepth),
-						(float) (midP.y - (height / 2) - 0.75 * sideDepth)),
-				(float) sidePocket, (float) sidePocket, (float) (Math.PI / 4),this);
-
-		new Hole("25",
-				new Vector2((float) (midP.x + width / 2 + 0.75 * sideDepth),
-						(float) (midP.y + (height / 2) + 0.75 * sideDepth)),
-				(float) sidePocket, (float) sidePocket, (float) (Math.PI / 4),this);
-
+		
 		FrictionJointDef frictionJointDef = new FrictionJointDef();
 		frictionJointDef.maxForce = 0.2f;
 		frictionJointDef.maxTorque = 0.1f;
 		frictionJointDef.bodyA = ballArray[0].getBody();
 		frictionJointDef.bodyB = boiteF.getBody();
 		frictionJointDef.collideConnected = false;
-
 		a.world.createJoint(frictionJointDef);
-		placeTriangle(new Point((int) (midP.x + (0.25 * width)), (int) (midP.y - 4 * ballRadius)));
-
 	}
 
 
@@ -148,6 +128,32 @@ public class PoolSetup {
 			out += "  -  ";
 		}
 		return out;
+	}
+	
+	void buildPocket() {
+		new Hole("21", new Vector2(midP.x, (float) (midP.y + (height / 2) + 0.75 * sidePocket)), (float) sidePocket,
+				(float) sidePocket,this);
+		new Hole("24", new Vector2(midP.x, (float) (midP.y - (height / 2) - 0.75 * sidePocket)), (float) sidePocket,
+				(float) sidePocket,this);
+
+		new Hole("20",
+				new Vector2((float) (midP.x - width / 2 - 0.75 * sideDepth),
+						(float) (midP.y - (height / 2) - 0.75 * sideDepth)),
+				(float) sidePocket, (float) sidePocket, (float) (Math.PI / 4),this);
+		new Hole("22",
+				new Vector2((float) (midP.x - width / 2 - 0.75 * sideDepth),
+						(float) (midP.y + (height / 2) + 0.75 * sideDepth)),
+				(float) sidePocket, (float) sidePocket, (float) (Math.PI / 4),this);
+
+		new Hole("23",
+				new Vector2((float) (midP.x + width / 2 + 0.75 * sideDepth),
+						(float) (midP.y - (height / 2) - 0.75 * sideDepth)),
+				(float) sidePocket, (float) sidePocket, (float) (Math.PI / 4),this);
+
+		new Hole("25",
+				new Vector2((float) (midP.x + width / 2 + 0.75 * sideDepth),
+						(float) (midP.y + (height / 2) + 0.75 * sideDepth)),
+				(float) sidePocket, (float) sidePocket, (float) (Math.PI / 4),this);
 	}
 	
 	void buildWall() {

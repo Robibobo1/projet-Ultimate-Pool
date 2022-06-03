@@ -22,6 +22,7 @@ import ch.hevs.gdx2d.components.physics.utils.PhysicsScreenBoundaries;
 import ch.hevs.gdx2d.desktop.PortableApplication;
 import ch.hevs.gdx2d.desktop.physics.DebugRenderer;
 import ch.hevs.gdx2d.lib.GdxGraphics;
+import ch.hevs.gdx2d.lib.physics.AbstractPhysicsObject;
 import ch.hevs.gdx2d.lib.physics.PhysicsWorld;
 
 public class App extends PortableApplication {
@@ -91,8 +92,7 @@ public class App extends PortableApplication {
 		switch (stateNow) {
 		case Play:
 			play(playerTurn, gameMode);
-			canePlacement();
-			myCane.drawCane(g);
+			if(gameMode != Mode.Place) myCane.drawCane(g);
 			break;
 		case Wait:
 			waitForSomething();
@@ -102,7 +102,7 @@ public class App extends PortableApplication {
 		}
 		// System.out.println(myCane.debug());
 		g.drawFPS();
-		g.drawString(20, 100, "" + playerTurn + " " + gameMode.name()  + " "+ p.debugCollisionList() + " " + stateNow.name());
+		g.drawString(20, 200, debugGameEngine());
 	}
 
 	@Override
@@ -115,7 +115,8 @@ public class App extends PortableApplication {
 		}
 
 		if (button == Input.Buttons.RIGHT) {
-			clickCnt--;
+			if (!CollisionDetection.hasCollision(p.ballArray[0], myCane))
+				clickCnt--;
 		}
 
 		if (button == Input.Buttons.MIDDLE) {
@@ -176,7 +177,13 @@ public class App extends PortableApplication {
 		
 		if(gameMode == Mode.Place)
 		{
-			
+			Vector2 mousePosition = new Vector2(Gdx.input.getX(), this.height - Gdx.input.getY());
+			if(clickCnt >= 1)
+			{
+				p.placeWhite(mousePosition);
+				gameMode = Mode.Normal;
+				clickCnt = 0;
+			}
 		}
 		else
 		{
@@ -222,6 +229,10 @@ public class App extends PortableApplication {
 			gameMode = Mode.Double;
 			return true;
 		}
+		if(gameMode == Mode.Place)
+		{
+			return true;
+		}
 		return false;
 	}
 	
@@ -243,7 +254,9 @@ public class App extends PortableApplication {
 			{
 				if(p.lastCollision[1] >= 20)
 				{
+					p.ballArray[0].setBodyLinearVelocity(0, 0);
 					p.ballArray[0].destroy();
+					gameMode = Mode.Place;
 					p.lastCollision = null;	
 					return;
 				}
@@ -251,5 +264,17 @@ public class App extends PortableApplication {
 		}
 	}
 	
-
+	String debugGameEngine()
+	{
+		String out = "";
+		if(!playerTurn) out += "Joueur 1";
+		else out += "Joueur 2";
+		out += "\nState: " + stateNow;
+		out += "\nMode: " + gameMode + "\n";
+		out += p.debugCollisionList() + "\n";
+		out += clickCnt;
+		return out;
+	}
 }
+
+
