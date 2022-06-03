@@ -101,7 +101,7 @@ public class App extends PortableApplication {
 		}
 		// System.out.println(myCane.debug());
 		g.drawFPS();
-		g.drawString(20, 100, "" + playerTurn + " " + gameMode.name()  + " "+ p.debugCollisionList());
+		g.drawString(20, 100, "" + playerTurn + " " + gameMode.name()  + " "+ p.debugCollisionList() + " ");
 	}
 
 	@Override
