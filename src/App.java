@@ -28,7 +28,7 @@ import ch.hevs.gdx2d.lib.physics.PhysicsWorld;
 public class App extends PortableApplication {
 
 	enum State {
-		Play, Wait, Place, Destroy, End
+		Play, Wait, Place, End
 	}
 
 	State stateNow = State.Play;
@@ -39,7 +39,7 @@ public class App extends PortableApplication {
 
 	Mode gameMode = Mode.Normal;
 
-	Player pNow, p1, p2;
+	Player pNow, pOther, p1, p2;
 
 	int playerTurn = 0;
 	PoolSetup p;
@@ -61,6 +61,7 @@ public class App extends PortableApplication {
 		p2 = new Player(2);
 
 		pNow = p1;
+		pOther = p2;
 	}
 
 	public static void main(String[] args) {
@@ -113,6 +114,9 @@ public class App extends PortableApplication {
 				stateNow = State.Play;
 				clickCnt = 0;
 			}
+			break;
+		case End:
+			System.out.println("yes");
 			break;
 		default:
 			break;
@@ -209,17 +213,15 @@ public class App extends PortableApplication {
 		if (roundEnded()) {
 			clickCnt = 0;
 			boolean didFault = checkForFault();
-			
+
 			if (gameMode == Mode.Place)
 				stateNow = State.Place;
-			else
-				stateNow = State.Play;
-			
+
 			if (gameMode == Mode.Double && !didFault) {
 				gameMode = Mode.Normal;
 				return;
 			}
-			if(!pNow.ballsIn.isEmpty() && !didFault){
+			if (!pNow.ballsIn.isEmpty() && !didFault) {
 				pNow.ballsIn.clear();
 				gameMode = Mode.Normal;
 				return;
@@ -232,34 +234,47 @@ public class App extends PortableApplication {
 	boolean checkForFault() {
 
 		if (!pNow.ballsIn.isEmpty()) {
-			if (pNow.playerType != null) {
-				for (int ballIn : pNow.ballsIn) {
-					if (isStriped(ballIn) && pNow.playerType == Player.BallType.Solid) {
-						gameMode = Mode.Double;
-						return true;
-					}
-					if(isSolid(ballIn) && pNow.playerType == Player.BallType.Striped) {
-						gameMode = Mode.Double;
-						return true;
-					}
-				}
-			} else {
+			if (pNow.playerType == null) {
 				int firstBall = pNow.ballsIn.firstElement();
 				if (isStriped(firstBall)) {
 					pNow.playerType = Player.BallType.Striped;
-					if (pNow.number == 1)
-						p2.playerType = Player.BallType.Solid;
-					if (pNow.number == 2)
-						p1.playerType = Player.BallType.Solid;
+					pOther.playerType = Player.BallType.Solid;
 				}
 				if (isSolid(firstBall)) {
 					pNow.playerType = Player.BallType.Solid;
-					if (pNow.number == 1)
-						p2.playerType = Player.BallType.Striped;
-					if (pNow.number == 2)
-						p1.playerType = Player.BallType.Striped;
-				}
+					pOther.playerType = Player.BallType.Striped;
+				}	
 			}
+			
+			for (int ballIn : pNow.ballsIn) {
+				if (ballIn == 8 && pNow.score < 7) {
+					stateNow = State.End;
+					return true;
+				}
+				if (isStriped(ballIn) && pNow.playerType == Player.BallType.Solid) {
+					if(gameMode == Mode.Normal) gameMode = Mode.Double;
+					pOther.score++;
+					return true;
+				}
+				if (isSolid(ballIn) && pNow.playerType == Player.BallType.Striped) {
+					if(gameMode == Mode.Normal) gameMode = Mode.Double;
+					pOther.score++;
+					return true;
+				}
+				if (isStriped(ballIn) && pNow.playerType == Player.BallType.Striped) {
+					pNow.score++;
+				}
+				if (isSolid(ballIn) && pNow.playerType == Player.BallType.Solid) {
+					pNow.score++;
+				}
+
+			}
+			
+			
+		}
+		
+		if (gameMode == Mode.Place) {
+			return true;
 		}
 
 		if (p.collisionList.isEmpty()) {
@@ -267,21 +282,18 @@ public class App extends PortableApplication {
 			return true;
 		} else {
 			int[] firstCollision = p.collisionList.firstElement();
-			if(firstCollision[0] == 0)
-			{
-				if(isStriped(firstCollision[1]) && pNow.playerType == Player.BallType.Solid) {
+			if (firstCollision[0] == 0) {
+				if (isStriped(firstCollision[1]) && pNow.playerType == Player.BallType.Solid) {
 					gameMode = Mode.Double;
 					return true;
 				}
-				if(isSolid(firstCollision[1]) && pNow.playerType == Player.BallType.Striped) {
+				if (isSolid(firstCollision[1]) && pNow.playerType == Player.BallType.Striped) {
 					gameMode = Mode.Double;
 					return true;
 				}
 			}
 		}
-		if (gameMode == Mode.Place) {
-			return true;
-		}
+
 		return false;
 	}
 
@@ -313,7 +325,8 @@ public class App extends PortableApplication {
 
 	String debugGameEngine() {
 		String out = "";
-		out += "Player " + pNow.number + " - " + pNow.playerType;
+		out += "Player " + pNow.number + " - " + pNow.playerType + " - " + pNow.score;
+		out += "\nPlayer " + pOther.number + " - " + pOther.playerType + " - " + pOther.score;
 		out += "\nState: " + stateNow;
 		out += "\nMode: " + gameMode + "\n";
 		out += p.debugCollisionList() + "\n";
@@ -325,10 +338,14 @@ public class App extends PortableApplication {
 
 		if (pNow.number == p1.number) {
 			p1 = pNow;
+			p2 = pOther;
 			pNow = p2;
+			pOther = p1;
 		} else {
+			p1 = pOther;
 			p2 = pNow;
 			pNow = p1;
+			pOther = p2;
 		}
 	}
 
