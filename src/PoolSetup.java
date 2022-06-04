@@ -59,6 +59,7 @@ public class PoolSetup {
 	
 	void placeWhite(Vector2 position)
 	{
+		ballArray[0] = null;
 		ballArray[0] = new PhysicsCircle("0", position,(float) ballRadius, 10, 0.7f, 0) {
 			public void collision(AbstractPhysicsObject other, float energy) {
 				int[] collision = new int[2];

@@ -28,7 +28,7 @@ import ch.hevs.gdx2d.lib.physics.PhysicsWorld;
 public class App extends PortableApplication {
 
 	enum State {
-		Play, Wait, Fault, Destroy, End
+		Play, Wait, Place, Destroy, End
 	}
 
 	State stateNow = State.Play;
@@ -39,9 +39,6 @@ public class App extends PortableApplication {
 
 	Mode gameMode = Mode.Normal;
 	
-	
-	
-	int roundMade = 0;
 	boolean playerTurn = false;
 	PoolSetup p;
 	int width, height;
@@ -87,15 +84,30 @@ public class App extends PortableApplication {
 		PhysicsWorld.updatePhysics(Gdx.graphics.getDeltaTime());
 		dbgRenderer.render(world, g.getCamera().combined);
 
-		ballPosition = p.ballArray[0].getBodyPosition();
+		
+		
+		if(gameMode != Mode.Place) ballPosition = p.ballArray[0].getBodyPosition();
 
 		switch (stateNow) {
 		case Play:
-			play(playerTurn, gameMode);
+			if(canePlacement()) {
+				p.collisionList.clear();
+				stateNow = State.Wait;
+			}
 			if(gameMode != Mode.Place) myCane.drawCane(g);
 			break;
 		case Wait:
 			waitForSomething();
+			break;
+		case Place:
+			Vector2 mousePosition = new Vector2(Gdx.input.getX(), this.height - Gdx.input.getY());
+			if(clickCnt >= 1)
+			{
+				p.placeWhite(mousePosition);
+				gameMode = Mode.Normal;
+				stateNow = State.Play;
+				clickCnt = 0;
+			}
 			break;
 		default:
 			break;
@@ -144,9 +156,11 @@ public class App extends PortableApplication {
 			myCane.setPosition(mousePosition);
 			if (collisionPoint != null) {
 				float lenght = myCane.getVelocity().len() / 3;
+				if(lenght > 5000) lenght = 5000;
 				force.setLength(lenght);
 				force.setAngle(angle + 90);
 				p.ballArray[0].applyBodyForce(force, collisionPoint, CreateLwjglApplication);
+				force.set(1f, 1f);
 				clickCnt = 0;
 				return true;
 			}
@@ -173,26 +187,6 @@ public class App extends PortableApplication {
 		return false;
 	}
 
-	void play(boolean player, Mode gameMode) {
-		
-		if(gameMode == Mode.Place)
-		{
-			Vector2 mousePosition = new Vector2(Gdx.input.getX(), this.height - Gdx.input.getY());
-			if(clickCnt >= 1)
-			{
-				p.placeWhite(mousePosition);
-				gameMode = Mode.Normal;
-				clickCnt = 0;
-			}
-		}
-		else
-		{
-			if(canePlacement()) {
-				p.collisionList.clear();
-				stateNow = State.Wait;
-			}
-		}
-	}
 
 	boolean roundEnded() {
 		for(PhysicsCircle c : p.ballArray)
@@ -211,8 +205,10 @@ public class App extends PortableApplication {
 		
 		if(roundEnded())
 		{
+			clickCnt = 0;
 			boolean didFault = checkForFault();
-			stateNow = State.Play;
+			if(gameMode == Mode.Place) stateNow = State.Place;
+			else stateNow = State.Play;
 			if(gameMode == Mode.Double && didFault == false)
 			{
 				gameMode = Mode.Normal;
@@ -272,7 +268,7 @@ public class App extends PortableApplication {
 		out += "\nState: " + stateNow;
 		out += "\nMode: " + gameMode + "\n";
 		out += p.debugCollisionList() + "\n";
-		out += clickCnt;
+		out += p.ballArray[0].getBodyLinearVelocity().len();
 		return out;
 	}
 }
