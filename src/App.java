@@ -6,6 +6,9 @@ import java.util.Vector;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Gdx2DPixmap;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Joint;
 import com.badlogic.gdx.physics.box2d.JointDef;
@@ -13,6 +16,8 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.FrictionJoint;
 import com.badlogic.gdx.physics.box2d.joints.FrictionJointDef;
 
+import ch.hevs.gdx2d.components.bitmaps.BitmapImage;
+import ch.hevs.gdx2d.components.bitmaps.Spritesheet;
 import ch.hevs.gdx2d.components.physics.primitives.PhysicsBox;
 import ch.hevs.gdx2d.components.physics.primitives.PhysicsCircle;
 import ch.hevs.gdx2d.components.physics.primitives.PhysicsStaticBox;
@@ -38,6 +43,10 @@ public class App extends PortableApplication {
 	}
 
 	Mode gameMode = Mode.Normal;
+
+	BitmapImage imgSol;
+	Texture imgTable;
+	Spritesheet balls;
 
 	Player pNow, pOther, p1, p2;
 
@@ -80,13 +89,24 @@ public class App extends PortableApplication {
 		p = new PoolSetup(this);
 		p.createPool();
 		myCane = new Cane(new Vector2(300, 150), 0);
-
+		imgSol = new BitmapImage("data/images/Sol.png");
+		imgTable = new Texture("data/images/Table.png");
+		balls = new Spritesheet("data/images/Boules.png", 100, 100);
 	}
 
 	@Override
 	public void onGraphicRender(GdxGraphics g) {
 		// TODO Auto-generated method stub
 		g.clear();
+
+		g.drawBackground(imgSol, 0, 0);
+		g.draw(imgTable, 280, 158, 1359, 765);
+
+		for (int i = 0; i < 16; i++) {
+			g.draw(balls.sprites[0][i], (float) (p.ballArray[i].getBodyPosition().x - p.ballRadius),
+					(float) (p.ballArray[i].getBodyPosition().y - p.ballRadius), (float) p.ballRadius * 2,
+					(float) p.ballRadius * 2);
+		}
 
 		PhysicsWorld.updatePhysics(Gdx.graphics.getDeltaTime());
 		dbgRenderer.render(world, g.getCamera().combined);
@@ -214,7 +234,7 @@ public class App extends PortableApplication {
 			clickCnt = 0;
 			boolean didFault = checkForFault();
 
-			stateNow = State.Play;
+			if(stateNow != State.End) stateNow = State.Play;
 
 			if (gameMode == Mode.Place)
 				stateNow = State.Place;
@@ -365,5 +385,19 @@ public class App extends PortableApplication {
 			return true;
 		}
 		return false;
+	}
+
+	void drawBalls(PhysicsCircle ball, GdxGraphics g, Color c) {
+		g.drawFilledCircle(ball.getBodyPosition().x, ball.getBodyPosition().y, ball.getBodyRadius(), c);
+
+		int ballNbr = Integer.parseInt(ball.name);
+
+		if (isSolid(ballNbr) || ballNbr == 8) {
+
+		}
+		if (isStriped(ballNbr)) {
+
+		}
+
 	}
 }
