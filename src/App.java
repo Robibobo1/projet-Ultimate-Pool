@@ -214,6 +214,8 @@ public class App extends PortableApplication {
 			clickCnt = 0;
 			boolean didFault = checkForFault();
 
+			stateNow = State.Play;
+
 			if (gameMode == Mode.Place)
 				stateNow = State.Place;
 
@@ -226,6 +228,7 @@ public class App extends PortableApplication {
 				gameMode = Mode.Normal;
 				return;
 			}
+
 			pNow.ballsIn.clear();
 			nextPlayer();
 		}
@@ -243,21 +246,23 @@ public class App extends PortableApplication {
 				if (isSolid(firstBall)) {
 					pNow.playerType = Player.BallType.Solid;
 					pOther.playerType = Player.BallType.Striped;
-				}	
+				}
 			}
-			
+
 			for (int ballIn : pNow.ballsIn) {
 				if (ballIn == 8 && pNow.score < 7) {
 					stateNow = State.End;
 					return true;
 				}
 				if (isStriped(ballIn) && pNow.playerType == Player.BallType.Solid) {
-					if(gameMode == Mode.Normal) gameMode = Mode.Double;
+					if (gameMode == Mode.Normal)
+						gameMode = Mode.Double;
 					pOther.score++;
 					return true;
 				}
 				if (isSolid(ballIn) && pNow.playerType == Player.BallType.Striped) {
-					if(gameMode == Mode.Normal) gameMode = Mode.Double;
+					if (gameMode == Mode.Normal)
+						gameMode = Mode.Double;
 					pOther.score++;
 					return true;
 				}
@@ -269,10 +274,9 @@ public class App extends PortableApplication {
 				}
 
 			}
-			
-			
+
 		}
-		
+
 		if (gameMode == Mode.Place) {
 			return true;
 		}
