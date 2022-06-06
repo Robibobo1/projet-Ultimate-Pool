@@ -1,4 +1,5 @@
 
+import java.awt.event.KeyEvent;
 import java.util.Iterator;
 
 import java.util.LinkedList;
@@ -30,7 +31,7 @@ import ch.hevs.gdx2d.lib.GdxGraphics;
 import ch.hevs.gdx2d.lib.physics.AbstractPhysicsObject;
 import ch.hevs.gdx2d.lib.physics.PhysicsWorld;
 
-public class App extends PortableApplication {
+public class App extends PortableApplication  {
 
 	enum State {
 		Play, Wait, Place, End
@@ -50,6 +51,11 @@ public class App extends PortableApplication {
 
 	Player pNow, pOther, p1, p2;
 
+	int waitPress = 0;
+	int isPressed = 0;
+	int hasBeenPressed=0;
+	int forceCanne = 0;
+	
 	int playerTurn = 0;
 	PoolSetup p;
 	int width, height;
@@ -116,9 +122,14 @@ public class App extends PortableApplication {
 
 		switch (stateNow) {
 		case Play:
-			if (canePlacement()) {
-				p.collisionList.clear();
-				stateNow = State.Wait;
+			try {
+				if (canePlacement()) {
+					p.collisionList.clear();
+					stateNow = State.Wait;
+				}
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 			if (gameMode != Mode.Place)
 				myCane.drawCane(g);
@@ -165,7 +176,7 @@ public class App extends PortableApplication {
 		}
 	}
 
-	boolean canePlacement() {
+	boolean canePlacement() throws InterruptedException {
 
 		Vector2 mousePosition = new Vector2(Gdx.input.getX(), this.height - Gdx.input.getY());
 		float angle = 90 + (float) Math
@@ -195,20 +206,34 @@ public class App extends PortableApplication {
 			}
 			break;
 		case 2:
-			double slope = (myCane.hitPoints[1].y - myCane.position.y) / (myCane.hitPoints[1].x - myCane.position.x);
-			float offset = (float) (myCane.position.y - slope * myCane.position.x);
-			float yLinearValue = (float) (slope * mousePosition.x + offset);
-			Vector2 linearPosition = new Vector2(mousePosition.x, yLinearValue);
-			myCane.setPosition(linearPosition);
-			if (collisionPoint != null) {
-				float lenght = myCane.getVelocity().len() / 3;
-				force.setLength(lenght);
-				force.setAngle(angle + 90);
-				if (!Double.isNaN(force.len()))
-					p.ballArray[0].applyBodyForce(force, collisionPoint, CreateLwjglApplication);
-				clickCnt = 0;
-				return true;
+//			double slope = (myCane.hitPoints[1].y - myCane.position.y) / (myCane.hitPoints[1].x - myCane.position.x);
+//			float offset = (float) (myCane.position.y - slope * myCane.position.x);
+//			float yLinearValue = (float) (slope * mousePosition.x + offset);
+//			Vector2 linearPosition = new Vector2(mousePosition.x, yLinearValue);
+//			myCane.setPosition(linearPosition);
+//			if (collisionPoint != null) {
+//				float lenght = myCane.getVelocity().len() / 3;
+//				force.setLength(lenght);
+//				force.setAngle(angle + 90);
+//				if (!Double.isNaN(force.len()))
+//					p.ballArray[0].applyBodyForce(force, collisionPoint, CreateLwjglApplication);
+//				clickCnt = 0;
+//				return true;
+//			}
+			
+			
+			waitPress = 1;
+			if (isPressed == 1) {
+				hasBeenPressed = 1;
+				forceCanne++;
 			}
+			if (isPressed == 0 && hasBeenPressed == 1) {
+				System.out.println(forceCanne);
+				hasBeenPressed = 0;
+				myCane.velocity.set(new Vector2(forceCanne,0));
+				myCane.velocity.setAngle(myCane.angle);
+			}
+							
 			break;
 		default:
 			clickCnt = 0;
@@ -216,7 +241,19 @@ public class App extends PortableApplication {
 		}
 		return false;
 	}
+	
+	public void onKeyDown(int input){
+		if (input == Input.Keys.SPACE && waitPress == 1) {
+			isPressed = 1;
+		}
+	}
 
+	public void onKeyUp(int input) {
+		if (input == Input.Keys.SPACE) {
+			isPressed = 0;
+		}
+	}
+	
 	boolean roundEnded() {
 		for (PhysicsCircle c : p.ballArray) {
 			if (c.getBodyLinearVelocity().len() > 0.001f) {
