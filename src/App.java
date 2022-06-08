@@ -1,4 +1,3 @@
-
 import java.awt.event.KeyEvent;
 import java.util.Iterator;
 
@@ -47,6 +46,7 @@ public class App extends PortableApplication  {
 
 	BitmapImage imgSol;
 	Texture imgTable;
+	Texture gradient;
 	Spritesheet balls;
 
 	Player pNow, pOther, p1, p2;
@@ -55,7 +55,6 @@ public class App extends PortableApplication  {
 	int isPressed = 0;
 	int hasBeenPressed=0;
 	int forceCanne = 0;
-	PhysicsStaticBox forceScale;
 	float forceScaleWidth;
 
 	
@@ -84,6 +83,7 @@ public class App extends PortableApplication  {
 
 	public static void main(String[] args) {
 		new App(1920, 1080);
+		new App(19, 1080);
 	}
 
 	@Override
@@ -99,9 +99,9 @@ public class App extends PortableApplication  {
 		p.createPool();
 		myCane = new Cane(new Vector2(300, 150), 0);
 		forceScaleWidth = 1;
-		forceScale = new PhysicsStaticBox("forceScale", new Vector2(width/2,height-75), forceScaleWidth, 25);
 		imgSol = new BitmapImage("data/images/Sol.png");
 		imgTable = new Texture("data/images/Table.png");
+		gradient = new Texture("data/images/gradient.png");
 		balls = new Spritesheet("data/images/Boules.png", 100, 100);
 	}
 
@@ -112,6 +112,8 @@ public class App extends PortableApplication  {
 
 		g.drawBackground(imgSol, 0, 0);
 		g.draw(imgTable, 280, 158, 1359, 765);
+		g.draw(gradient, width/2-200, height-90, forceScaleWidth , 25,500,500,0,0); //à améliorer
+
 
 		for (int i = 0; i < 16; i++) {
 			g.draw(balls.sprites[0][i], (float) (p.ballArray[i].getBodyPosition().x - p.ballRadius),
@@ -247,11 +249,9 @@ public class App extends PortableApplication  {
 					
 					forceCanne++;
 					
-					forceScaleWidth = forceScaleWidth + forceCanne;
+					forceScaleWidth = 2*forceCanne;
 
-					forceScale.destroy();
-					forceScale = new PhysicsStaticBox(null, new Vector2(width/2,height-75), forceScaleWidth, 25);
-
+		
 					newPosX = (float) (myCane.position.x-Math.cos(Math.toRadians(myCane.angle+90))*2);
 					newPosY = (float) (myCane.position.y-Math.sin(Math.toRadians(myCane.angle+90))*2);
 					
@@ -264,12 +264,10 @@ public class App extends PortableApplication  {
 				float newPosX;
 				float newPosY;
 				
-				forceScale.destroy();
-				forceScale = new PhysicsStaticBox(null, new Vector2(width/2,height-75), 1, 25);
 				forceScaleWidth = 1;
 				
-				newPosX = (float) (myCane.position.x+Math.cos(Math.toRadians(myCane.angle+90))*forceCanne/5);
-				newPosY = (float) (myCane.position.y+Math.sin(Math.toRadians(myCane.angle+90))*forceCanne/5);
+				newPosX = (float) (myCane.position.x+Math.cos(Math.toRadians(myCane.angle+90))*forceCanne/2);
+				newPosY = (float) (myCane.position.y+Math.sin(Math.toRadians(myCane.angle+90))*forceCanne/2);
 				
 				myCane.setPosition(new Vector2(newPosX,newPosY));
 				if (collisionPoint != null) {
