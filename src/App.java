@@ -83,7 +83,7 @@ public class App extends PortableApplication  {
 
 	public static void main(String[] args) {
 		new App(1920, 1080);
-		new App(19, 1080);
+		
 	}
 
 	@Override
@@ -91,7 +91,7 @@ public class App extends PortableApplication  {
 		// TODO Auto-generated method stub
 
 		world.setGravity(new Vector2(0, 0));
-		world.setVelocityThreshold(0.0001f);
+		World.setVelocityThreshold(0.0001f);
 		dbgRenderer = new DebugRenderer();
 		new PhysicsScreenBoundaries(getWindowWidth(), getWindowHeight());
 
