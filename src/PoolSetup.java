@@ -29,7 +29,7 @@ public class PoolSetup {
 
 	int ballNumber = 0;
 
-	PhysicsCircle[] ballArray = new PhysicsCircle[16];
+	PoolBall[] ballArray = new PoolBall[16];
 
 	Point midP = new Point();
 
@@ -53,14 +53,14 @@ public class PoolSetup {
 		
 		placeWhite( new Vector2((int) (midP.x - (0.25 * width)), (int) (midP.y)));
 		
-		placeTriangle(new Point((int) (midP.x + (0.25 * width)), (int) (midP.y - 4 * ballRadius)));
+		placeTriangle(new Point((int) (midP.x + (0.25 * width)), (int) (midP.y)));
 
 	}
 	
 	void placeWhite(Vector2 position)
 	{
 		ballArray[0] = null;
-		ballArray[0] = new PhysicsCircle("0", position,(float) ballRadius, 10, 0.7f, 0) {
+		ballArray[0] = new PoolBall("0", position,(float) ballRadius, 10f, 0.7f, 0f) {
 			public void collision(AbstractPhysicsObject other, float energy) {
 				int[] collision = new int[2];
 				try {
@@ -99,25 +99,94 @@ public class PoolSetup {
 	}
 
 	void ballPlacer(int rowLeft, Point position) {
-		for (int i = 0; i < rowLeft; i++) {
 
-			ballNumber++;
-			ballArray[ballNumber] = new PhysicsCircle("" + ballNumber, // Name
-					new Vector2((float) (position.x + 1 + (ballRadius * 2 * rowLeft)), // Position x
-							(float) (position.y + 1 + ballRadius * (5 - rowLeft) + ballRadius * 2 * i)), // Position y
+			
+			ballArray[1] = new PoolBall("1" , // Name
+					new Vector2((float) (position.x), // Position x
+							(float) (position.y)), // Position y
 					(float) ballRadius, ballDensity, 0.7f, 0); // Radius, density, restitution and friction
-			FrictionJointDef frictionJointDef = new FrictionJointDef();
-			frictionJointDef.maxForce = 0.2f;
-			frictionJointDef.maxTorque = 0.1f;
-			frictionJointDef.bodyA = ballArray[ballNumber].getBody();
-			frictionJointDef.bodyB = boiteF.getBody();
-			frictionJointDef.collideConnected = false;
-			a.world.createJoint(frictionJointDef);
-
-		}
-		if (rowLeft > 1) {
-			ballPlacer(rowLeft - 1, position);
-		}
+			
+			ballArray[2] = new PoolBall("2" , // Name
+					new Vector2((float) (position.x + 2*ballRadius/1.2), // Position x
+							(float) (position.y+ballRadius)), // Position y
+					(float) ballRadius, ballDensity, 0.7f, 0); // Radius, density, restitution and friction
+			
+			ballArray[3] = new PoolBall("3" , // Name
+					new Vector2((float) (position.x + 4 * ballRadius/1.2), // Position x
+							(float) (position.y-2*ballRadius)), // Position y
+					(float) ballRadius, ballDensity, 0.7f, 0); // Radius, density, restitution and friction
+			
+			ballArray[4] = new PoolBall("4" , // Name
+					new Vector2((float) (position.x + 6 * ballRadius/1.2), // Position x
+							(float) (position.y-ballRadius)), // Position y
+					(float) ballRadius, ballDensity, 0.7f, 0); // Radius, density, restitution and friction
+			
+			ballArray[5] = new PoolBall("5" , // Name
+					new Vector2((float) (position.x + 6 * ballRadius/1.2), // Position x
+							(float) (position.y+3*ballRadius)), // Position y
+					(float) ballRadius, ballDensity, 0.7f, 0); // Radius, density, restitution and friction
+			
+			ballArray[6] = new PoolBall("6" , // Name
+					new Vector2((float) (position.x + 8 * ballRadius/1.2), // Position x
+							(float) (position.y-4*ballRadius)), // Position y
+					(float) ballRadius, ballDensity, 0.7f, 0); // Radius, density, restitution and friction
+			
+			ballArray[7] = new PoolBall("7" , // Name
+					new Vector2((float) (position.x + 8 * ballRadius/1.2), // Position x
+							(float) (position.y+2*ballRadius)), // Position y
+					(float) ballRadius, ballDensity, 0.7f, 0); // Radius, density, restitution and friction
+			
+			ballArray[8] = new PoolBall("8" , // Name
+					new Vector2((float) (position.x + 4 * ballRadius/1.2), // Position x
+							(float) (position.y)), // Position y
+					(float) ballRadius, ballDensity, 0.7f, 0); // Radius, density, restitution and friction
+			
+			ballArray[9] = new PoolBall("9" , // Name
+					new Vector2((float) (position.x + 2 * ballRadius/1.2), // Position x
+							(float) (position.y-ballRadius)), // Position y
+					(float) ballRadius, ballDensity, 0.7f, 0); // Radius, density, restitution and friction
+			
+			ballArray[10] = new PoolBall("10" , // Name
+					new Vector2((float) (position.x + 4 * ballRadius/1.2), // Position x
+							(float) (position.y+2*ballRadius)), // Position y
+					(float) ballRadius, ballDensity, 0.7f, 0); // Radius, density, restitution and friction
+			
+			ballArray[11] = new PoolBall("11" , // Name
+					new Vector2((float) (position.x + 6 * ballRadius/1.2), // Position x
+							(float) (position.y-3*ballRadius)), // Position y
+					(float) ballRadius, ballDensity, 0.7f, 0); // Radius, density, restitution and friction
+			
+			ballArray[12] = new PoolBall("12" , // Name
+					new Vector2((float) (position.x + 6 * ballRadius/1.2), // Position x
+							(float) (position.y+ballRadius)), // Position y
+					(float) ballRadius, ballDensity, 0.7f, 0); // Radius, density, restitution and friction
+			
+			ballArray[13] = new PoolBall("13" , // Name
+					new Vector2((float) (position.x + 8 * ballRadius/1.2), // Position x
+							(float) (position.y-2*ballRadius)), // Position y
+					(float) ballRadius, ballDensity, 0.7f, 0); // Radius, density, restitution and friction
+			
+			ballArray[14] = new PoolBall("14" , // Name
+					new Vector2((float) (position.x + 8 * ballRadius/1.2), // Position x
+							(float) (position.y)), // Position y
+					(float) ballRadius, ballDensity, 0.7f, 0); // Radius, density, restitution and friction
+			
+			ballArray[15] = new PoolBall("15" , // Name
+					new Vector2((float) (position.x + 8 * ballRadius/1.2), // Position x
+							(float) (position.y+4*ballRadius)), // Position y
+					(float) ballRadius, ballDensity, 0.7f, 0); // Radius, density, restitution and friction
+			
+			for (int j = 1; j < ballArray.length; j++) {
+				FrictionJointDef frictionJointDef = new FrictionJointDef();
+				frictionJointDef.maxForce = 0.2f;
+				frictionJointDef.maxTorque = 0.1f;
+				frictionJointDef.bodyA = ballArray[j].getBody();
+				frictionJointDef.bodyB = boiteF.getBody();
+				frictionJointDef.collideConnected = false;
+				a.world.createJoint(frictionJointDef);
+			}
+			
+		
 	}
 
 	String debugCollisionList() {
@@ -138,22 +207,22 @@ public class PoolSetup {
 				(float) sidePocket,this);
 
 		new Hole("20",
-				new Vector2((float) (midP.x - width / 2 - 0.75 * sideDepth),
-						(float) (midP.y - (height / 2) - 0.75 * sideDepth)),
+				new Vector2((float) (midP.x - width / 2 - 1.5 * sideDepth),
+						(float) (midP.y - (height / 2) - 1.5 * sideDepth)),
 				(float) sidePocket, (float) sidePocket, (float) (Math.PI / 4),this);
 		new Hole("22",
-				new Vector2((float) (midP.x - width / 2 - 0.75 * sideDepth),
-						(float) (midP.y + (height / 2) + 0.75 * sideDepth)),
+				new Vector2((float) (midP.x - width / 2 - 1.5 * sideDepth),
+						(float) (midP.y + (height / 2) + 1.5 * sideDepth)),
 				(float) sidePocket, (float) sidePocket, (float) (Math.PI / 4),this);
 
 		new Hole("23",
-				new Vector2((float) (midP.x + width / 2 + 0.75 * sideDepth),
-						(float) (midP.y - (height / 2) - 0.75 * sideDepth)),
+				new Vector2((float) (midP.x + width / 2 + 1.5 * sideDepth),
+						(float) (midP.y - (height / 2) - 1.5 * sideDepth)),
 				(float) sidePocket, (float) sidePocket, (float) (Math.PI / 4),this);
 
 		new Hole("25",
-				new Vector2((float) (midP.x + width / 2 + 0.75 * sideDepth),
-						(float) (midP.y + (height / 2) + 0.75 * sideDepth)),
+				new Vector2((float) (midP.x + width / 2 + 1.5 * sideDepth),
+						(float) (midP.y + (height / 2) + 1.5 * sideDepth)),
 				(float) sidePocket, (float) sidePocket, (float) (Math.PI / 4),this);
 	}
 	
