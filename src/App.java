@@ -61,7 +61,7 @@ public class App extends PortableApplication {
 	Vector2 force = new Vector2(1, 1);
 
 	App(int width, int height) {
-		super(width, height, false);
+		super(width, height, true);
 		this.width = width;
 		this.height = height;
 		ballPosition = new Vector2(this.width / 2, this.height / 2);
@@ -82,7 +82,7 @@ public class App extends PortableApplication {
 		// TODO Auto-generated method stub
 
 		world.setGravity(new Vector2(0, 0));
-		world.setVelocityThreshold(0.0001f);
+		World.setVelocityThreshold(0.0001f);
 		dbgRenderer = new DebugRenderer();
 		new PhysicsScreenBoundaries(getWindowWidth(), getWindowHeight());
 
@@ -103,13 +103,15 @@ public class App extends PortableApplication {
 		g.draw(imgTable, 280, 158, 1359, 765);
 
 		for (int i = 0; i < 16; i++) {
-			g.draw(balls.sprites[0][i], (float) (p.ballArray[i].getBodyPosition().x - p.ballRadius),
-					(float) (p.ballArray[i].getBodyPosition().y - p.ballRadius), (float) p.ballRadius * 2,
-					(float) p.ballRadius * 2);
+			if (!p.ballArray[i].isInHole) {
+				g.draw(balls.sprites[0][i], (float) (p.ballArray[i].getBodyPosition().x - p.ballRadius),
+						(float) (p.ballArray[i].getBodyPosition().y - p.ballRadius), (float) p.ballRadius * 2,
+						(float) p.ballRadius * 2);
+			}
 		}
 
 		PhysicsWorld.updatePhysics(Gdx.graphics.getDeltaTime());
-		dbgRenderer.render(world, g.getCamera().combined);
+		// dbgRenderer.render(world, g.getCamera().combined);
 
 		if (gameMode != Mode.Place)
 			ballPosition = p.ballArray[0].getBodyPosition();
@@ -161,7 +163,8 @@ public class App extends PortableApplication {
 		}
 
 		if (button == Input.Buttons.MIDDLE) {
-
+			System.out.println();
+			
 		}
 	}
 
@@ -234,10 +237,14 @@ public class App extends PortableApplication {
 			clickCnt = 0;
 			boolean didFault = checkForFault();
 
-			if(stateNow != State.End) stateNow = State.Play;
+			if (stateNow != State.End)
+				stateNow = State.Play;
 
 			if (gameMode == Mode.Place)
 				stateNow = State.Place;
+			
+			if(pNow.playerType == null)
+				return;
 
 			if (gameMode == Mode.Double && !didFault) {
 				gameMode = Mode.Normal;
@@ -301,12 +308,17 @@ public class App extends PortableApplication {
 			return true;
 		}
 
-		if (p.collisionList.isEmpty()) {
+		if (p.collisionList.isEmpty()) { // Si on touche rien
 			gameMode = Mode.Double;
 			return true;
+			
 		} else {
 			int[] firstCollision = p.collisionList.firstElement();
-			if (firstCollision[0] == 0) {
+			
+			if (firstCollision[0] == 0) { // Lis la première collision de la balle
+				
+				if(pNow.playerType == null) return false;
+				
 				if (isStriped(firstCollision[1]) && pNow.playerType == Player.BallType.Solid) {
 					gameMode = Mode.Double;
 					return true;
@@ -329,6 +341,7 @@ public class App extends PortableApplication {
 					pNow.ballsIn.add(p.lastCollision[1]);
 					p.ballArray[p.lastCollision[1]].setBodyLinearVelocity(0, 0);
 					p.ballArray[p.lastCollision[1]].destroy();
+					p.ballArray[p.lastCollision[1]].isInHole = true;
 					p.lastCollision = null;
 					return;
 				}
@@ -339,6 +352,7 @@ public class App extends PortableApplication {
 				if (p.lastCollision[1] >= 20) {
 					p.ballArray[0].setBodyLinearVelocity(0, 0);
 					p.ballArray[0].destroy();
+					p.ballArray[0].isInHole = true;
 					gameMode = Mode.Place;
 					p.lastCollision = null;
 					return;
@@ -354,7 +368,8 @@ public class App extends PortableApplication {
 		out += "\nState: " + stateNow;
 		out += "\nMode: " + gameMode + "\n";
 		out += p.debugCollisionList() + "\n";
-		out += p.ballArray[0].getBodyLinearVelocity().len();
+		out += p.ballArray[0].getBodyLinearVelocity().len() + "\n";
+		out += p.ballArray[0];
 		return out;
 	}
 

@@ -29,7 +29,7 @@ public class PoolSetup {
 
 	int ballNumber = 0;
 
-	PhysicsCircle[] ballArray = new PhysicsCircle[16];
+	PoolBall[] ballArray = new PoolBall[16];
 
 	Point midP = new Point();
 
@@ -60,7 +60,7 @@ public class PoolSetup {
 	void placeWhite(Vector2 position)
 	{
 		ballArray[0] = null;
-		ballArray[0] = new PhysicsCircle("0", position,(float) ballRadius, 10, 0.7f, 0) {
+		ballArray[0] = new PoolBall("0", position,(float) ballRadius, 10f, 0.7f, 0f) {
 			public void collision(AbstractPhysicsObject other, float energy) {
 				int[] collision = new int[2];
 				try {
@@ -101,77 +101,77 @@ public class PoolSetup {
 	void ballPlacer(int rowLeft, Point position) {
 
 			
-			ballArray[1] = new PhysicsCircle("1" , // Name
+			ballArray[1] = new PoolBall("1" , // Name
 					new Vector2((float) (position.x), // Position x
 							(float) (position.y)), // Position y
 					(float) ballRadius, ballDensity, 0.7f, 0); // Radius, density, restitution and friction
 			
-			ballArray[2] = new PhysicsCircle("2" , // Name
+			ballArray[2] = new PoolBall("2" , // Name
 					new Vector2((float) (position.x + 2*ballRadius/1.2), // Position x
 							(float) (position.y+ballRadius)), // Position y
 					(float) ballRadius, ballDensity, 0.7f, 0); // Radius, density, restitution and friction
 			
-			ballArray[3] = new PhysicsCircle("3" , // Name
+			ballArray[3] = new PoolBall("3" , // Name
 					new Vector2((float) (position.x + 4 * ballRadius/1.2), // Position x
 							(float) (position.y-2*ballRadius)), // Position y
 					(float) ballRadius, ballDensity, 0.7f, 0); // Radius, density, restitution and friction
 			
-			ballArray[4] = new PhysicsCircle("4" , // Name
+			ballArray[4] = new PoolBall("4" , // Name
 					new Vector2((float) (position.x + 6 * ballRadius/1.2), // Position x
 							(float) (position.y-ballRadius)), // Position y
 					(float) ballRadius, ballDensity, 0.7f, 0); // Radius, density, restitution and friction
 			
-			ballArray[5] = new PhysicsCircle("5" , // Name
+			ballArray[5] = new PoolBall("5" , // Name
 					new Vector2((float) (position.x + 6 * ballRadius/1.2), // Position x
 							(float) (position.y+3*ballRadius)), // Position y
 					(float) ballRadius, ballDensity, 0.7f, 0); // Radius, density, restitution and friction
 			
-			ballArray[6] = new PhysicsCircle("6" , // Name
+			ballArray[6] = new PoolBall("6" , // Name
 					new Vector2((float) (position.x + 8 * ballRadius/1.2), // Position x
 							(float) (position.y-4*ballRadius)), // Position y
 					(float) ballRadius, ballDensity, 0.7f, 0); // Radius, density, restitution and friction
 			
-			ballArray[7] = new PhysicsCircle("7" , // Name
+			ballArray[7] = new PoolBall("7" , // Name
 					new Vector2((float) (position.x + 8 * ballRadius/1.2), // Position x
 							(float) (position.y+2*ballRadius)), // Position y
 					(float) ballRadius, ballDensity, 0.7f, 0); // Radius, density, restitution and friction
 			
-			ballArray[8] = new PhysicsCircle("8" , // Name
+			ballArray[8] = new PoolBall("8" , // Name
 					new Vector2((float) (position.x + 4 * ballRadius/1.2), // Position x
 							(float) (position.y)), // Position y
 					(float) ballRadius, ballDensity, 0.7f, 0); // Radius, density, restitution and friction
 			
-			ballArray[9] = new PhysicsCircle("9" , // Name
+			ballArray[9] = new PoolBall("9" , // Name
 					new Vector2((float) (position.x + 2 * ballRadius/1.2), // Position x
 							(float) (position.y-ballRadius)), // Position y
 					(float) ballRadius, ballDensity, 0.7f, 0); // Radius, density, restitution and friction
 			
-			ballArray[10] = new PhysicsCircle("10" , // Name
+			ballArray[10] = new PoolBall("10" , // Name
 					new Vector2((float) (position.x + 4 * ballRadius/1.2), // Position x
 							(float) (position.y+2*ballRadius)), // Position y
 					(float) ballRadius, ballDensity, 0.7f, 0); // Radius, density, restitution and friction
 			
-			ballArray[11] = new PhysicsCircle("11" , // Name
+			ballArray[11] = new PoolBall("11" , // Name
 					new Vector2((float) (position.x + 6 * ballRadius/1.2), // Position x
 							(float) (position.y-3*ballRadius)), // Position y
 					(float) ballRadius, ballDensity, 0.7f, 0); // Radius, density, restitution and friction
 			
-			ballArray[12] = new PhysicsCircle("12" , // Name
+			ballArray[12] = new PoolBall("12" , // Name
 					new Vector2((float) (position.x + 6 * ballRadius/1.2), // Position x
 							(float) (position.y+ballRadius)), // Position y
 					(float) ballRadius, ballDensity, 0.7f, 0); // Radius, density, restitution and friction
 			
-			ballArray[13] = new PhysicsCircle("13" , // Name
+			ballArray[13] = new PoolBall("13" , // Name
 					new Vector2((float) (position.x + 8 * ballRadius/1.2), // Position x
 							(float) (position.y-2*ballRadius)), // Position y
 					(float) ballRadius, ballDensity, 0.7f, 0); // Radius, density, restitution and friction
 			
-			ballArray[14] = new PhysicsCircle("14" , // Name
+			ballArray[14] = new PoolBall("14" , // Name
 					new Vector2((float) (position.x + 8 * ballRadius/1.2), // Position x
 							(float) (position.y)), // Position y
 					(float) ballRadius, ballDensity, 0.7f, 0); // Radius, density, restitution and friction
 			
-			ballArray[15] = new PhysicsCircle("15" , // Name
+			ballArray[15] = new PoolBall("15" , // Name
 					new Vector2((float) (position.x + 8 * ballRadius/1.2), // Position x
 							(float) (position.y+4*ballRadius)), // Position y
 					(float) ballRadius, ballDensity, 0.7f, 0); // Radius, density, restitution and friction
