@@ -8,6 +8,7 @@ public class Player {
 	
 	BallType playerType = null;
 	
+	boolean allIn;
 	int number;
 	int score = 0;
 	Vector<Integer> ballsIn = new Vector<Integer>();
@@ -25,4 +26,5 @@ public class Player {
 	{
 		ballsIn.clear();
 	}
+	
 }

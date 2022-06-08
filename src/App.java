@@ -27,11 +27,14 @@ import ch.hevs.gdx2d.components.physics.utils.PhysicsScreenBoundaries;
 import ch.hevs.gdx2d.desktop.PortableApplication;
 import ch.hevs.gdx2d.desktop.physics.DebugRenderer;
 import ch.hevs.gdx2d.lib.GdxGraphics;
+import ch.hevs.gdx2d.lib.ScreenManager;
 import ch.hevs.gdx2d.lib.physics.AbstractPhysicsObject;
 import ch.hevs.gdx2d.lib.physics.PhysicsWorld;
 
 public class App extends PortableApplication  {
 
+	
+	
 	enum State {
 		Play, Wait, Place, End
 	}
@@ -39,7 +42,7 @@ public class App extends PortableApplication  {
 	State stateNow = State.Play;
 
 	enum Mode {
-		Normal, Double, Place
+		Normal, Double, Place, 
 	}
 
 	Mode gameMode = Mode.Normal;
@@ -57,7 +60,7 @@ public class App extends PortableApplication  {
 	int forceCanne = 0;
 	float forceScaleWidth;
 
-	
+	boolean holeChosed = false;
 	int playerTurn = 0;
 	PoolSetup p;
 	int width, height;
@@ -194,11 +197,6 @@ public class App extends PortableApplication  {
 		if (mousePosition.x - ballPosition.x < 0)
 			angle = angle + 180;
 		force.setAngle(angle + 90);
-		
-		float angleF = 90 + (float) Math
-				.toDegrees(Math.atan((myCane.position.y - ballPosition.y) / (myCane.position.x - ballPosition.x)));
-		if (myCane.position.x - ballPosition.x < 0)
-			angleF = angleF + 180;
 
 		Vector2 collisionPoint = CollisionDetection.pointInMeter(p.ballArray[0], myCane);
 		force.set(1f, 1f);
@@ -209,15 +207,53 @@ public class App extends PortableApplication  {
 			myCane.setAngle(angle);
 			break;
 		case 1:
-			myCane.setPosition(mousePosition);
-			if (collisionPoint != null) {
-				float lenght = myCane.getVelocity().len() / 3;
-				force.setLength(lenght);
-				force.setAngle(myCane.getVelocity().angle());
-				if (!Double.isNaN(force.len()))
-					p.ballArray[0].applyBodyForce(force, collisionPoint, CreateLwjglApplication);
+			
+			if(pNow.allIn && !holeChosed) {
+				float mouseX = mousePosition.x;
+				float mouseY = mousePosition.y;
+				
+				if (mouseY > height/2) {
+					if (mouseX < width/2-200) {
+						//haut gauche
+						System.out.println("haut gauche");
+						holeChosed = true;
+					}
+					else if (mouseX > width/2+200) {
+						//Haut droite
+						System.out.println("haut droite");
+						}
+					else {
+						//Haut milieu
+						System.out.println("haut milieu");
+					}
+				}
+				else{
+					if (mouseX < width/2-200){
+						//Bas gauche
+					}
+					else if (mouseX > width/2-200) {
+						//Bas droite
+					}
+					else {
+						//Bas milieu
+					}
+				}
+				
 				clickCnt = 0;
-				return true;
+			}
+			else {
+				myCane.setPosition(mousePosition);
+				if (collisionPoint != null) {
+					float lenght = myCane.getVelocity().len() / 3;
+					force.setLength(lenght);
+					force.setAngle(myCane.getVelocity().angle());
+					if (!Double.isNaN(force.len()))
+						p.ballArray[0].applyBodyForce(force, collisionPoint, CreateLwjglApplication);
+					clickCnt = 0;
+					return true;
+					}
+			
+				
 			}
 			break;
 		case 2:
@@ -277,7 +313,7 @@ public class App extends PortableApplication  {
 				if (collisionPoint != null) {
 					float lenght = myCane.getVelocity().len() / 3;
 					force.setLength(lenght);
-					force.setAngle(angleF + 90);
+					force.setAngle(myCane.getVelocity().angle());
 					if (!Double.isNaN(force.len()))
 						p.ballArray[0].applyBodyForce(force, collisionPoint, CreateLwjglApplication);
 					clickCnt = 0;
@@ -384,9 +420,17 @@ public class App extends PortableApplication  {
 				}
 				if (isStriped(ballIn) && pNow.playerType == Player.BallType.Striped) {
 					pNow.score++;
+					if (pNow.score == 1) {
+						pNow.allIn=true;
+						holeChosed = false;
+					}
 				}
 				if (isSolid(ballIn) && pNow.playerType == Player.BallType.Solid) {
 					pNow.score++;
+					if (pNow.score == 1) {
+						pNow.allIn=true;
+						holeChosed = false;
+					}
 				}
 
 			}
