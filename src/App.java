@@ -116,13 +116,15 @@ public class App extends PortableApplication  {
 
 
 		for (int i = 0; i < 16; i++) {
-			g.draw(balls.sprites[0][i], (float) (p.ballArray[i].getBodyPosition().x - p.ballRadius),
-					(float) (p.ballArray[i].getBodyPosition().y - p.ballRadius), (float) p.ballRadius * 2,
-					(float) p.ballRadius * 2);
+			if (!p.ballArray[i].isInHole) {
+				g.draw(balls.sprites[0][i], (float) (p.ballArray[i].getBodyPosition().x - p.ballRadius),
+						(float) (p.ballArray[i].getBodyPosition().y - p.ballRadius), (float) p.ballRadius * 2,
+						(float) p.ballRadius * 2);
+			}
 		}
 
 		PhysicsWorld.updatePhysics(Gdx.graphics.getDeltaTime());
-		dbgRenderer.render(world, g.getCamera().combined);
+		//dbgRenderer.render(world, g.getCamera().combined);
 
 		if (gameMode != Mode.Place)
 			ballPosition = p.ballArray[0].getBodyPosition();
@@ -179,7 +181,8 @@ public class App extends PortableApplication  {
 		}
 
 		if (button == Input.Buttons.MIDDLE) {
-
+			System.out.println();
+			
 		}
 	}
 
@@ -210,7 +213,7 @@ public class App extends PortableApplication  {
 			if (collisionPoint != null) {
 				float lenght = myCane.getVelocity().len() / 3;
 				force.setLength(lenght);
-				force.setAngle(angle + 90);
+				force.setAngle(myCane.getVelocity().angle());
 				if (!Double.isNaN(force.len()))
 					p.ballArray[0].applyBodyForce(force, collisionPoint, CreateLwjglApplication);
 				clickCnt = 0;
@@ -218,6 +221,7 @@ public class App extends PortableApplication  {
 			}
 			break;
 		case 2:
+
 			
 //			double slope = (myCane.hitPoints[1].y - myCane.position.y) / (myCane.hitPoints[1].x - myCane.position.x);
 //			float offset = (float) (myCane.position.y - slope * myCane.position.x);
@@ -281,6 +285,7 @@ public class App extends PortableApplication  {
 					hasBeenPressed = 0;
 					return true;
 				}
+
 			}
 							
 			break;
@@ -320,10 +325,14 @@ public class App extends PortableApplication  {
 			clickCnt = 0;
 			boolean didFault = checkForFault();
 
-			if(stateNow != State.End) stateNow = State.Play;
+			if (stateNow != State.End)
+				stateNow = State.Play;
 
 			if (gameMode == Mode.Place)
 				stateNow = State.Place;
+			
+			if(pNow.playerType == null)
+				return;
 
 			if (gameMode == Mode.Double && !didFault) {
 				gameMode = Mode.Normal;
@@ -343,6 +352,7 @@ public class App extends PortableApplication  {
 	boolean checkForFault() {
 
 		if (!pNow.ballsIn.isEmpty()) {
+			
 			if (pNow.playerType == null) {
 				int firstBall = pNow.ballsIn.firstElement();
 				if (isStriped(firstBall)) {
@@ -387,12 +397,17 @@ public class App extends PortableApplication  {
 			return true;
 		}
 
-		if (p.collisionList.isEmpty()) {
+		if (p.collisionList.isEmpty()) { // Si on touche rien
 			gameMode = Mode.Double;
 			return true;
+			
 		} else {
 			int[] firstCollision = p.collisionList.firstElement();
-			if (firstCollision[0] == 0) {
+			
+			if (firstCollision[0] == 0) { // Lis la première collision de la balle
+				
+				if(pNow.playerType == null) return false;
+				
 				if (isStriped(firstCollision[1]) && pNow.playerType == Player.BallType.Solid) {
 					gameMode = Mode.Double;
 					return true;
@@ -415,6 +430,7 @@ public class App extends PortableApplication  {
 					pNow.ballsIn.add(p.lastCollision[1]);
 					p.ballArray[p.lastCollision[1]].setBodyLinearVelocity(0, 0);
 					p.ballArray[p.lastCollision[1]].destroy();
+					p.ballArray[p.lastCollision[1]].isInHole = true;
 					p.lastCollision = null;
 					return;
 				}
@@ -425,6 +441,7 @@ public class App extends PortableApplication  {
 				if (p.lastCollision[1] >= 20) {
 					p.ballArray[0].setBodyLinearVelocity(0, 0);
 					p.ballArray[0].destroy();
+					p.ballArray[0].isInHole = true;
 					gameMode = Mode.Place;
 					p.lastCollision = null;
 					return;
@@ -440,7 +457,8 @@ public class App extends PortableApplication  {
 		out += "\nState: " + stateNow;
 		out += "\nMode: " + gameMode + "\n";
 		out += p.debugCollisionList() + "\n";
-		out += p.ballArray[0].getBodyLinearVelocity().len();
+		out += p.ballArray[0].getBodyLinearVelocity().len() + "\n";
+		out += myCane.getVelocity().angle();
 		return out;
 	}
 

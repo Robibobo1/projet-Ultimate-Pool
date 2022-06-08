@@ -29,7 +29,7 @@ public class PoolSetup {
 
 	int ballNumber = 0;
 
-	PhysicsCircle[] ballArray = new PhysicsCircle[16];
+	PoolBall[] ballArray = new PoolBall[16];
 
 	Point midP = new Point();
 
@@ -60,7 +60,7 @@ public class PoolSetup {
 	void placeWhite(Vector2 position)
 	{
 		ballArray[0] = null;
-		ballArray[0] = new PhysicsCircle("0", position,(float) ballRadius, 10, 0.7f, 0) {
+		ballArray[0] = new PoolBall("0", position,(float) ballRadius, 10f, 0.7f, 0f) {
 			public void collision(AbstractPhysicsObject other, float energy) {
 				int[] collision = new int[2];
 				try {
@@ -101,11 +101,11 @@ public class PoolSetup {
 	void ballPlacer(int rowLeft, Point position) {
 
 			
-			ballArray[1] = new PhysicsCircle("1" , // Name
+			ballArray[1] = new PoolBall("1" , // Name
 					new Vector2((float) (position.x), // Position x
 							(float) (position.y)), // Position y
 					(float) ballRadius, ballDensity, 0.7f, 0); // Radius, density, restitution and friction
-			
+		
 			ballArray[2] = new PhysicsCircle("2" , // Name
 					new Vector2((float) (position.x + 2*ballRadius/1.1), // Position x
 							(float) (position.y+ballRadius)), // Position y
@@ -173,6 +173,7 @@ public class PoolSetup {
 			
 			ballArray[15] = new PhysicsCircle("15" , // Name
 					new Vector2((float) (position.x + 8 * ballRadius/1.1), // Position x
+
 							(float) (position.y+4*ballRadius)), // Position y
 					(float) ballRadius, ballDensity, 0.7f, 0); // Radius, density, restitution and friction
 			
