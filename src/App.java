@@ -55,6 +55,9 @@ public class App extends PortableApplication  {
 	int isPressed = 0;
 	int hasBeenPressed=0;
 	int forceCanne = 0;
+	PhysicsStaticBox forceScale;
+	float forceScaleWidth;
+
 	
 	int playerTurn = 0;
 	PoolSetup p;
@@ -67,7 +70,7 @@ public class App extends PortableApplication  {
 	Vector2 force = new Vector2(1, 1);
 
 	App(int width, int height) {
-		super(width, height, false);
+		super(width, height, true);
 		this.width = width;
 		this.height = height;
 		ballPosition = new Vector2(this.width / 2, this.height / 2);
@@ -95,6 +98,8 @@ public class App extends PortableApplication  {
 		p = new PoolSetup(this);
 		p.createPool();
 		myCane = new Cane(new Vector2(300, 150), 0);
+		forceScaleWidth = 1;
+		forceScale = new PhysicsStaticBox("forceScale", new Vector2(width/2,height-75), forceScaleWidth, 25);
 		imgSol = new BitmapImage("data/images/Sol.png");
 		imgTable = new Texture("data/images/Table.png");
 		balls = new Spritesheet("data/images/Boules.png", 100, 100);
@@ -184,6 +189,11 @@ public class App extends PortableApplication  {
 		if (mousePosition.x - ballPosition.x < 0)
 			angle = angle + 180;
 		force.setAngle(angle + 90);
+		
+		float angleF = 90 + (float) Math
+				.toDegrees(Math.atan((myCane.position.y - ballPosition.y) / (myCane.position.x - ballPosition.x)));
+		if (myCane.position.x - ballPosition.x < 0)
+			angleF = angleF + 180;
 
 		Vector2 collisionPoint = CollisionDetection.pointInMeter(p.ballArray[0], myCane);
 		force.set(1f, 1f);
@@ -206,6 +216,7 @@ public class App extends PortableApplication  {
 			}
 			break;
 		case 2:
+			
 //			double slope = (myCane.hitPoints[1].y - myCane.position.y) / (myCane.hitPoints[1].x - myCane.position.x);
 //			float offset = (float) (myCane.position.y - slope * myCane.position.x);
 //			float yLinearValue = (float) (slope * mousePosition.x + offset);
@@ -220,18 +231,58 @@ public class App extends PortableApplication  {
 //				clickCnt = 0;
 //				return true;
 //			}
+//			
 			
 			
 			waitPress = 1;
 			if (isPressed == 1) {
+				
+				float newPosX;
+				float newPosY;
+				
 				hasBeenPressed = 1;
-				forceCanne++;
+				
+				
+				if (forceCanne <= 200) {
+					
+					forceCanne++;
+					
+					forceScaleWidth = forceScaleWidth + forceCanne;
+
+					forceScale.destroy();
+					forceScale = new PhysicsStaticBox(null, new Vector2(width/2,height-75), forceScaleWidth, 25);
+
+					newPosX = (float) (myCane.position.x-Math.cos(Math.toRadians(myCane.angle+90))*2);
+					newPosY = (float) (myCane.position.y-Math.sin(Math.toRadians(myCane.angle+90))*2);
+					
+					myCane.setPosition(new Vector2(newPosX,newPosY));
+				}
+	
 			}
 			if (isPressed == 0 && hasBeenPressed == 1) {
 				System.out.println(forceCanne);
-				hasBeenPressed = 0;
-				myCane.velocity.set(new Vector2(forceCanne,0));
-				myCane.velocity.setAngle(myCane.angle);
+				float newPosX;
+				float newPosY;
+				
+				forceScale.destroy();
+				forceScale = new PhysicsStaticBox(null, new Vector2(width/2,height-75), 1, 25);
+				forceScaleWidth = 1;
+				
+				newPosX = (float) (myCane.position.x+Math.cos(Math.toRadians(myCane.angle+90))*forceCanne/5);
+				newPosY = (float) (myCane.position.y+Math.sin(Math.toRadians(myCane.angle+90))*forceCanne/5);
+				
+				myCane.setPosition(new Vector2(newPosX,newPosY));
+				if (collisionPoint != null) {
+					float lenght = myCane.getVelocity().len() / 3;
+					force.setLength(lenght);
+					force.setAngle(angleF + 90);
+					if (!Double.isNaN(force.len()))
+						p.ballArray[0].applyBodyForce(force, collisionPoint, CreateLwjglApplication);
+					clickCnt = 0;
+					forceCanne = 0;
+					hasBeenPressed = 0;
+					return true;
+				}
 			}
 							
 			break;

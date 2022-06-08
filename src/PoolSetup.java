@@ -207,22 +207,22 @@ public class PoolSetup {
 				(float) sidePocket,this);
 
 		new Hole("20",
-				new Vector2((float) (midP.x - width / 2 - 0.75 * sideDepth),
-						(float) (midP.y - (height / 2) - 0.75 * sideDepth)),
+				new Vector2((float) (midP.x - width / 2 - 1.5 * sideDepth),
+						(float) (midP.y - (height / 2) - 1.5 * sideDepth)),
 				(float) sidePocket, (float) sidePocket, (float) (Math.PI / 4),this);
 		new Hole("22",
-				new Vector2((float) (midP.x - width / 2 - 0.75 * sideDepth),
-						(float) (midP.y + (height / 2) + 0.75 * sideDepth)),
+				new Vector2((float) (midP.x - width / 2 - 1.5 * sideDepth),
+						(float) (midP.y + (height / 2) + 1.5 * sideDepth)),
 				(float) sidePocket, (float) sidePocket, (float) (Math.PI / 4),this);
 
 		new Hole("23",
-				new Vector2((float) (midP.x + width / 2 + 0.75 * sideDepth),
-						(float) (midP.y - (height / 2) - 0.75 * sideDepth)),
+				new Vector2((float) (midP.x + width / 2 + 1.5 * sideDepth),
+						(float) (midP.y - (height / 2) - 1.5 * sideDepth)),
 				(float) sidePocket, (float) sidePocket, (float) (Math.PI / 4),this);
 
 		new Hole("25",
-				new Vector2((float) (midP.x + width / 2 + 0.75 * sideDepth),
-						(float) (midP.y + (height / 2) + 0.75 * sideDepth)),
+				new Vector2((float) (midP.x + width / 2 + 1.5 * sideDepth),
+						(float) (midP.y + (height / 2) + 1.5 * sideDepth)),
 				(float) sidePocket, (float) sidePocket, (float) (Math.PI / 4),this);
 	}
 	
