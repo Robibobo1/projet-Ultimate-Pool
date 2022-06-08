@@ -1,4 +1,4 @@
-
+import java.awt.event.KeyEvent;
 import java.util.Iterator;
 
 import java.util.LinkedList;
@@ -30,7 +30,7 @@ import ch.hevs.gdx2d.lib.GdxGraphics;
 import ch.hevs.gdx2d.lib.physics.AbstractPhysicsObject;
 import ch.hevs.gdx2d.lib.physics.PhysicsWorld;
 
-public class App extends PortableApplication {
+public class App extends PortableApplication  {
 
 	enum State {
 		Play, Wait, Place, End
@@ -46,10 +46,18 @@ public class App extends PortableApplication {
 
 	BitmapImage imgSol;
 	Texture imgTable;
+	Texture gradient;
 	Spritesheet balls;
 
 	Player pNow, pOther, p1, p2;
 
+	int waitPress = 0;
+	int isPressed = 0;
+	int hasBeenPressed=0;
+	int forceCanne = 0;
+	float forceScaleWidth;
+
+	
 	int playerTurn = 0;
 	PoolSetup p;
 	int width, height;
@@ -75,6 +83,7 @@ public class App extends PortableApplication {
 
 	public static void main(String[] args) {
 		new App(1920, 1080);
+		
 	}
 
 	@Override
@@ -89,8 +98,10 @@ public class App extends PortableApplication {
 		p = new PoolSetup(this);
 		p.createPool();
 		myCane = new Cane(new Vector2(300, 150), 0);
+		forceScaleWidth = 1;
 		imgSol = new BitmapImage("data/images/Sol.png");
 		imgTable = new Texture("data/images/Table.png");
+		gradient = new Texture("data/images/gradient.png");
 		balls = new Spritesheet("data/images/Boules.png", 100, 100);
 	}
 
@@ -101,6 +112,8 @@ public class App extends PortableApplication {
 
 		g.drawBackground(imgSol, 0, 0);
 		g.draw(imgTable, 280, 158, 1359, 765);
+		g.draw(gradient, width/2-200, height-90, forceScaleWidth , 25,500,500,0,0); //à améliorer
+
 
 		for (int i = 0; i < 16; i++) {
 			if (!p.ballArray[i].isInHole) {
@@ -118,9 +131,14 @@ public class App extends PortableApplication {
 
 		switch (stateNow) {
 		case Play:
-			if (canePlacement()) {
-				p.collisionList.clear();
-				stateNow = State.Wait;
+			try {
+				if (canePlacement()) {
+					p.collisionList.clear();
+					stateNow = State.Wait;
+				}
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 			if (gameMode != Mode.Place)
 				myCane.drawCane(g);
@@ -168,7 +186,7 @@ public class App extends PortableApplication {
 		}
 	}
 
-	boolean canePlacement() {
+	boolean canePlacement() throws InterruptedException {
 
 		Vector2 mousePosition = new Vector2(Gdx.input.getX(), this.height - Gdx.input.getY());
 		float angle = 90 + (float) Math
@@ -176,6 +194,11 @@ public class App extends PortableApplication {
 		if (mousePosition.x - ballPosition.x < 0)
 			angle = angle + 180;
 		force.setAngle(angle + 90);
+		
+		float angleF = 90 + (float) Math
+				.toDegrees(Math.atan((myCane.position.y - ballPosition.y) / (myCane.position.x - ballPosition.x)));
+		if (myCane.position.x - ballPosition.x < 0)
+			angleF = angleF + 180;
 
 		Vector2 collisionPoint = CollisionDetection.pointInMeter(p.ballArray[0], myCane);
 		force.set(1f, 1f);
@@ -198,20 +221,73 @@ public class App extends PortableApplication {
 			}
 			break;
 		case 2:
-			double slope = (myCane.hitPoints[1].y - myCane.position.y) / (myCane.hitPoints[1].x - myCane.position.x);
-			float offset = (float) (myCane.position.y - slope * myCane.position.x);
-			float yLinearValue = (float) (slope * mousePosition.x + offset);
-			Vector2 linearPosition = new Vector2(mousePosition.x, yLinearValue);
-			myCane.setPosition(linearPosition);
-			if (collisionPoint != null) {
-				float lenght = myCane.getVelocity().len() / 3;
-				force.setLength(lenght);
-				force.setAngle(myCane.getVelocity().angle());
-				if (!Double.isNaN(force.len()))
-					p.ballArray[0].applyBodyForce(force, collisionPoint, CreateLwjglApplication);
-				clickCnt = 0;
-				return true;
+
+			
+//			double slope = (myCane.hitPoints[1].y - myCane.position.y) / (myCane.hitPoints[1].x - myCane.position.x);
+//			float offset = (float) (myCane.position.y - slope * myCane.position.x);
+//			float yLinearValue = (float) (slope * mousePosition.x + offset);
+//			Vector2 linearPosition = new Vector2(mousePosition.x, yLinearValue);
+//			myCane.setPosition(linearPosition);
+//			if (collisionPoint != null) {
+//				float lenght = myCane.getVelocity().len() / 3;
+//				force.setLength(lenght);
+//				force.setAngle(angle + 90);
+//				if (!Double.isNaN(force.len()))
+//					p.ballArray[0].applyBodyForce(force, collisionPoint, CreateLwjglApplication);
+//				clickCnt = 0;
+//				return true;
+//			}
+//			
+			
+			
+			waitPress = 1;
+			if (isPressed == 1) {
+				
+				float newPosX;
+				float newPosY;
+				
+				hasBeenPressed = 1;
+				
+				
+				if (forceCanne <= 200) {
+					
+					forceCanne++;
+					
+					forceScaleWidth = 2*forceCanne;
+
+		
+					newPosX = (float) (myCane.position.x-Math.cos(Math.toRadians(myCane.angle+90))*2);
+					newPosY = (float) (myCane.position.y-Math.sin(Math.toRadians(myCane.angle+90))*2);
+					
+					myCane.setPosition(new Vector2(newPosX,newPosY));
+				}
+	
 			}
+			if (isPressed == 0 && hasBeenPressed == 1) {
+				System.out.println(forceCanne);
+				float newPosX;
+				float newPosY;
+				
+				forceScaleWidth = 1;
+				
+				newPosX = (float) (myCane.position.x+Math.cos(Math.toRadians(myCane.angle+90))*forceCanne/2);
+				newPosY = (float) (myCane.position.y+Math.sin(Math.toRadians(myCane.angle+90))*forceCanne/2);
+				
+				myCane.setPosition(new Vector2(newPosX,newPosY));
+				if (collisionPoint != null) {
+					float lenght = myCane.getVelocity().len() / 3;
+					force.setLength(lenght);
+					force.setAngle(angleF + 90);
+					if (!Double.isNaN(force.len()))
+						p.ballArray[0].applyBodyForce(force, collisionPoint, CreateLwjglApplication);
+					clickCnt = 0;
+					forceCanne = 0;
+					hasBeenPressed = 0;
+					return true;
+				}
+
+			}
+							
 			break;
 		default:
 			clickCnt = 0;
@@ -219,7 +295,19 @@ public class App extends PortableApplication {
 		}
 		return false;
 	}
+	
+	public void onKeyDown(int input){
+		if (input == Input.Keys.SPACE && waitPress == 1) {
+			isPressed = 1;
+		}
+	}
 
+	public void onKeyUp(int input) {
+		if (input == Input.Keys.SPACE) {
+			isPressed = 0;
+		}
+	}
+	
 	boolean roundEnded() {
 		for (PhysicsCircle c : p.ballArray) {
 			if (c.getBodyLinearVelocity().len() > 0.001f) {
