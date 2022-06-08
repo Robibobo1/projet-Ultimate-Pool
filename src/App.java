@@ -111,7 +111,7 @@ public class App extends PortableApplication {
 		}
 
 		PhysicsWorld.updatePhysics(Gdx.graphics.getDeltaTime());
-		// dbgRenderer.render(world, g.getCamera().combined);
+		//dbgRenderer.render(world, g.getCamera().combined);
 
 		if (gameMode != Mode.Place)
 			ballPosition = p.ballArray[0].getBodyPosition();
@@ -190,7 +190,7 @@ public class App extends PortableApplication {
 			if (collisionPoint != null) {
 				float lenght = myCane.getVelocity().len() / 3;
 				force.setLength(lenght);
-				force.setAngle(angle + 90);
+				force.setAngle(myCane.getVelocity().angle());
 				if (!Double.isNaN(force.len()))
 					p.ballArray[0].applyBodyForce(force, collisionPoint, CreateLwjglApplication);
 				clickCnt = 0;
@@ -206,7 +206,7 @@ public class App extends PortableApplication {
 			if (collisionPoint != null) {
 				float lenght = myCane.getVelocity().len() / 3;
 				force.setLength(lenght);
-				force.setAngle(angle + 90);
+				force.setAngle(myCane.getVelocity().angle());
 				if (!Double.isNaN(force.len()))
 					p.ballArray[0].applyBodyForce(force, collisionPoint, CreateLwjglApplication);
 				clickCnt = 0;
@@ -264,6 +264,7 @@ public class App extends PortableApplication {
 	boolean checkForFault() {
 
 		if (!pNow.ballsIn.isEmpty()) {
+			
 			if (pNow.playerType == null) {
 				int firstBall = pNow.ballsIn.firstElement();
 				if (isStriped(firstBall)) {
@@ -369,7 +370,7 @@ public class App extends PortableApplication {
 		out += "\nMode: " + gameMode + "\n";
 		out += p.debugCollisionList() + "\n";
 		out += p.ballArray[0].getBodyLinearVelocity().len() + "\n";
-		out += p.ballArray[0];
+		out += myCane.getVelocity().angle();
 		return out;
 	}
 
