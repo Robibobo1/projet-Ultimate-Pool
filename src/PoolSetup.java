@@ -8,7 +8,7 @@ import ch.hevs.gdx2d.components.physics.primitives.PhysicsCircle;
 import ch.hevs.gdx2d.components.physics.primitives.PhysicsStaticBox;
 import ch.hevs.gdx2d.components.physics.primitives.PhysicsStaticLine;
 import ch.hevs.gdx2d.lib.physics.AbstractPhysicsObject;
-import ch.hevs.gdx2d.lib.utils.Logger;
+
 
 public class PoolSetup {
 	App a;

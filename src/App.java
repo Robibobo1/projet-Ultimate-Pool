@@ -1,36 +1,24 @@
-import java.awt.event.KeyEvent;
-import java.util.Iterator;
 
-import java.util.LinkedList;
-import java.util.Vector;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Gdx2DPixmap;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Joint;
-import com.badlogic.gdx.physics.box2d.JointDef;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.physics.box2d.joints.FrictionJoint;
-import com.badlogic.gdx.physics.box2d.joints.FrictionJointDef;
-
 import ch.hevs.gdx2d.components.bitmaps.BitmapImage;
 import ch.hevs.gdx2d.components.bitmaps.Spritesheet;
-import ch.hevs.gdx2d.components.physics.primitives.PhysicsBox;
 import ch.hevs.gdx2d.components.physics.primitives.PhysicsCircle;
-import ch.hevs.gdx2d.components.physics.primitives.PhysicsStaticBox;
-import ch.hevs.gdx2d.components.physics.primitives.PhysicsStaticLine;
-import ch.hevs.gdx2d.components.physics.utils.PhysicsConstants;
 import ch.hevs.gdx2d.components.physics.utils.PhysicsScreenBoundaries;
 import ch.hevs.gdx2d.desktop.PortableApplication;
 import ch.hevs.gdx2d.desktop.physics.DebugRenderer;
 import ch.hevs.gdx2d.lib.GdxGraphics;
-import ch.hevs.gdx2d.lib.physics.AbstractPhysicsObject;
 import ch.hevs.gdx2d.lib.physics.PhysicsWorld;
 
-public class App extends PortableApplication  {
+public class App extends PortableApplication {
 
 	enum State {
 		Play, Wait, Place, End
@@ -51,13 +39,14 @@ public class App extends PortableApplication  {
 
 	Player pNow, pOther, p1, p2;
 
+	private BitmapFont titleFont, textFont;
+
 	int waitPress = 0;
 	int isPressed = 0;
-	int hasBeenPressed=0;
+	int hasBeenPressed = 0;
 	int forceCanne = 0;
 	float forceScaleWidth;
 
-	
 	int playerTurn = 0;
 	PoolSetup p;
 	int width, height;
@@ -83,12 +72,21 @@ public class App extends PortableApplication  {
 
 	public static void main(String[] args) {
 		new App(1920, 1080);
-		
+
 	}
 
 	@Override
 	public void onInit() {
 		// TODO Auto-generated method stub
+
+		FileHandle Dosis = Gdx.files.internal("data/font/Dosis.ttf");
+		FreeTypeFontParameter parameter = new FreeTypeFontParameter();
+		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Dosis);
+		parameter.size = generator.scaleForPixelHeight(70);
+		parameter.color = Color.BLACK;
+		titleFont = generator.generateFont(parameter);
+		parameter.size = generator.scaleForPixelHeight(40);
+		textFont = generator.generateFont(parameter);
 
 		world.setGravity(new Vector2(0, 0));
 		World.setVelocityThreshold(0.0001f);
@@ -112,8 +110,11 @@ public class App extends PortableApplication  {
 
 		g.drawBackground(imgSol, 0, 0);
 		g.draw(imgTable, 280, 158, 1359, 765);
-		g.draw(gradient, width/2-200, height-90, forceScaleWidth , 25,500,500,0,0); //à améliorer
+		g.draw(gradient, width / 2 - 200, height - 90, forceScaleWidth, 25, 500, 500, 0, 0); // à améliorer
 
+		showGameInfo(g);
+
+		PhysicsWorld.updatePhysics(Gdx.graphics.getDeltaTime());
 
 		for (int i = 0; i < 16; i++) {
 			if (!p.ballArray[i].isInHole) {
@@ -123,8 +124,7 @@ public class App extends PortableApplication  {
 			}
 		}
 
-		PhysicsWorld.updatePhysics(Gdx.graphics.getDeltaTime());
-		//dbgRenderer.render(world, g.getCamera().combined);
+		// dbgRenderer.render(world, g.getCamera().combined);
 
 		if (gameMode != Mode.Place)
 			ballPosition = p.ballArray[0].getBodyPosition();
@@ -156,7 +156,7 @@ public class App extends PortableApplication  {
 			}
 			break;
 		case End:
-			System.out.println("yes");
+			System.out.println("END");
 			break;
 		default:
 			break;
@@ -181,8 +181,8 @@ public class App extends PortableApplication  {
 		}
 
 		if (button == Input.Buttons.MIDDLE) {
-			System.out.println();
-			
+			pNow.ballsInAll.add(2);
+
 		}
 	}
 
@@ -194,11 +194,6 @@ public class App extends PortableApplication  {
 		if (mousePosition.x - ballPosition.x < 0)
 			angle = angle + 180;
 		force.setAngle(angle + 90);
-		
-		float angleF = 90 + (float) Math
-				.toDegrees(Math.atan((myCane.position.y - ballPosition.y) / (myCane.position.x - ballPosition.x)));
-		if (myCane.position.x - ballPosition.x < 0)
-			angleF = angleF + 180;
 
 		Vector2 collisionPoint = CollisionDetection.pointInMeter(p.ballArray[0], myCane);
 		force.set(1f, 1f);
@@ -221,63 +216,42 @@ public class App extends PortableApplication  {
 			}
 			break;
 		case 2:
-
-			
-//			double slope = (myCane.hitPoints[1].y - myCane.position.y) / (myCane.hitPoints[1].x - myCane.position.x);
-//			float offset = (float) (myCane.position.y - slope * myCane.position.x);
-//			float yLinearValue = (float) (slope * mousePosition.x + offset);
-//			Vector2 linearPosition = new Vector2(mousePosition.x, yLinearValue);
-//			myCane.setPosition(linearPosition);
-//			if (collisionPoint != null) {
-//				float lenght = myCane.getVelocity().len() / 3;
-//				force.setLength(lenght);
-//				force.setAngle(angle + 90);
-//				if (!Double.isNaN(force.len()))
-//					p.ballArray[0].applyBodyForce(force, collisionPoint, CreateLwjglApplication);
-//				clickCnt = 0;
-//				return true;
-//			}
-//			
-			
-			
 			waitPress = 1;
 			if (isPressed == 1) {
-				
+
 				float newPosX;
 				float newPosY;
-				
-				hasBeenPressed = 1;
-				
-				
-				if (forceCanne <= 200) {
-					
-					forceCanne++;
-					
-					forceScaleWidth = 2*forceCanne;
 
-		
-					newPosX = (float) (myCane.position.x-Math.cos(Math.toRadians(myCane.angle+90))*2);
-					newPosY = (float) (myCane.position.y-Math.sin(Math.toRadians(myCane.angle+90))*2);
-					
-					myCane.setPosition(new Vector2(newPosX,newPosY));
+				hasBeenPressed = 1;
+
+				if (forceCanne <= 200) {
+
+					forceCanne++;
+
+					forceScaleWidth = 2 * forceCanne;
+
+					newPosX = (float) (myCane.position.x - Math.cos(Math.toRadians(myCane.angle + 90)) * 2);
+					newPosY = (float) (myCane.position.y - Math.sin(Math.toRadians(myCane.angle + 90)) * 2);
+
+					myCane.setPosition(new Vector2(newPosX, newPosY));
 				}
-	
+
 			}
 			if (isPressed == 0 && hasBeenPressed == 1) {
 				System.out.println(forceCanne);
 				float newPosX;
 				float newPosY;
-				
+
 				forceScaleWidth = 1;
-				
-				newPosX = (float) (myCane.position.x+Math.cos(Math.toRadians(myCane.angle+90))*forceCanne/2);
-				newPosY = (float) (myCane.position.y+Math.sin(Math.toRadians(myCane.angle+90))*forceCanne/2);
-				
-				myCane.setPosition(new Vector2(newPosX,newPosY));
+
+				newPosX = (float) (myCane.position.x + Math.cos(Math.toRadians(myCane.angle + 90)) * forceCanne / 2);
+				newPosY = (float) (myCane.position.y + Math.sin(Math.toRadians(myCane.angle + 90)) * forceCanne / 2);
+
+				myCane.setPosition(new Vector2(newPosX, newPosY));
 				if (collisionPoint != null) {
 					float lenght = myCane.getVelocity().len() / 3;
 					force.setLength(lenght);
-					force.setAngle(angleF + 90);
+					force.setAngle(myCane.getVelocity().angle());
 					if (!Double.isNaN(force.len()))
 						p.ballArray[0].applyBodyForce(force, collisionPoint, CreateLwjglApplication);
 					clickCnt = 0;
@@ -287,7 +261,7 @@ public class App extends PortableApplication  {
 				}
 
 			}
-							
+
 			break;
 		default:
 			clickCnt = 0;
@@ -295,8 +269,8 @@ public class App extends PortableApplication  {
 		}
 		return false;
 	}
-	
-	public void onKeyDown(int input){
+
+	public void onKeyDown(int input) {
 		if (input == Input.Keys.SPACE && waitPress == 1) {
 			isPressed = 1;
 		}
@@ -307,7 +281,7 @@ public class App extends PortableApplication  {
 			isPressed = 0;
 		}
 	}
-	
+
 	boolean roundEnded() {
 		for (PhysicsCircle c : p.ballArray) {
 			if (c.getBodyLinearVelocity().len() > 0.001f) {
@@ -330,31 +304,32 @@ public class App extends PortableApplication  {
 
 			if (gameMode == Mode.Place)
 				stateNow = State.Place;
-			
-			if(pNow.playerType == null)
+
+			if (pNow.playerType == null) {
+				nextPlayer();
 				return;
+			}
 
 			if (gameMode == Mode.Double && !didFault) {
 				gameMode = Mode.Normal;
 				return;
 			}
-			if (!pNow.ballsIn.isEmpty() && !didFault) {
-				pNow.ballsIn.clear();
+			if (!pNow.ballsInTmp.isEmpty() && !didFault) {
+				pNow.ballsInTmp.clear();
 				gameMode = Mode.Normal;
 				return;
 			}
-
-			pNow.ballsIn.clear();
+			pNow.ballsInTmp.clear();
 			nextPlayer();
 		}
 	}
 
 	boolean checkForFault() {
 
-		if (!pNow.ballsIn.isEmpty()) {
-			
+		if (!pNow.ballsInTmp.isEmpty()) {
+
 			if (pNow.playerType == null) {
-				int firstBall = pNow.ballsIn.firstElement();
+				int firstBall = pNow.ballsInTmp.firstElement();
 				if (isStriped(firstBall)) {
 					pNow.playerType = Player.BallType.Striped;
 					pOther.playerType = Player.BallType.Solid;
@@ -365,7 +340,7 @@ public class App extends PortableApplication  {
 				}
 			}
 
-			for (int ballIn : pNow.ballsIn) {
+			for (int ballIn : pNow.ballsInTmp) {
 				if (ballIn == 8 && pNow.score < 7) {
 					stateNow = State.End;
 					return true;
@@ -400,14 +375,15 @@ public class App extends PortableApplication  {
 		if (p.collisionList.isEmpty()) { // Si on touche rien
 			gameMode = Mode.Double;
 			return true;
-			
+
 		} else {
 			int[] firstCollision = p.collisionList.firstElement();
-			
+
 			if (firstCollision[0] == 0) { // Lis la première collision de la balle
-				
-				if(pNow.playerType == null) return false;
-				
+
+				if (pNow.playerType == null)
+					return false;
+
 				if (isStriped(firstCollision[1]) && pNow.playerType == Player.BallType.Solid) {
 					gameMode = Mode.Double;
 					return true;
@@ -427,7 +403,8 @@ public class App extends PortableApplication  {
 			for (int i = 20; i < 26; i++) {
 				if (p.lastCollision[0] == i) // Balle normale dans trou
 				{
-					pNow.ballsIn.add(p.lastCollision[1]);
+					pNow.ballsInTmp.add(p.lastCollision[1]);
+					pNow.ballsInAll.add(p.lastCollision[1]);
 					p.ballArray[p.lastCollision[1]].setBodyLinearVelocity(0, 0);
 					p.ballArray[p.lastCollision[1]].destroy();
 					p.ballArray[p.lastCollision[1]].isInHole = true;
@@ -457,8 +434,8 @@ public class App extends PortableApplication  {
 		out += "\nState: " + stateNow;
 		out += "\nMode: " + gameMode + "\n";
 		out += p.debugCollisionList() + "\n";
-		out += p.ballArray[0].getBodyLinearVelocity().len() + "\n";
-		out += myCane.getVelocity().angle();
+		out += p1.debugBall() + "\n";
+		out += p2.debugBall();
 		return out;
 	}
 
@@ -491,16 +468,67 @@ public class App extends PortableApplication  {
 		return false;
 	}
 
-	void drawBalls(PhysicsCircle ball, GdxGraphics g, Color c) {
-		g.drawFilledCircle(ball.getBodyPosition().x, ball.getBodyPosition().y, ball.getBodyRadius(), c);
+	void showGameInfo(GdxGraphics g) {
+		
+		Color backColor = new Color(222f / 255 ,183f / 255,127f / 255,1);
 
-		int ballNbr = Integer.parseInt(ball.name);
-
-		if (isSolid(ballNbr) || ballNbr == 8) {
-
+		int titleConst = 775;
+		int leftConst = 45;
+		
+		if(pNow.number == 1) {
+			g.drawFilledRectangle(135, titleConst - 235, 220, 510, 0, Color.YELLOW);
+			g.drawFilledRectangle(1775, titleConst - 235, 220, 510, 0, Color.BLACK);
 		}
-		if (isStriped(ballNbr)) {
+		else {
+			g.drawFilledRectangle(135, titleConst - 235, 220, 510, 0, Color.BLACK);
+			g.drawFilledRectangle(1775, titleConst - 235, 220, 510, 0, Color.YELLOW);
+		}
 
+		
+		g.drawFilledRectangle(135, titleConst - 235, 210, 500, 0, backColor);
+		g.drawString(leftConst, titleConst, "Player " + p1.number, titleFont);
+		g.drawString(leftConst, titleConst - 65, "Score : " + p1.score, textFont);
+		g.drawString(leftConst, titleConst - 115, "Ball type : ", textFont);
+		String pType;
+		if (p1.playerType == null)
+			pType = "--- ";
+		else
+			pType = p1.playerType.name();
+		g.drawString(leftConst, titleConst - 165, pType, textFont);
+
+		int collumn = 0;
+		int line = 0;
+
+		for (int ball : p1.ballsInAll) {
+			g.draw(balls.sprites[0][ball], leftConst + 5 + collumn * 60, titleConst - 260 - line * 60, 45, 45);
+			collumn++;
+			if (collumn == 3) {
+				collumn = 0;
+				line++;
+			}
+		}
+
+		int rightConst = 1680;
+		
+		g.drawFilledRectangle(1775, titleConst - 235, 210, 500, 0, backColor);
+		g.drawString(rightConst, titleConst, "Player " + p2.number, titleFont);
+		g.drawString(rightConst, titleConst - 65, "Score : " + p2.score, textFont);
+		g.drawString(rightConst, titleConst - 115, "Ball type : ", textFont);
+		if (p2.playerType == null)
+			pType = "--- ";
+		else
+			pType = p2.playerType.name();
+		g.drawString(rightConst, titleConst - 165, pType, textFont);
+
+		collumn = 0;
+		line = 0;
+		for (int ball : p2.ballsInAll) {
+			g.draw(balls.sprites[0][ball], rightConst + 5 + collumn * 60, titleConst - 260 - line * 60, 45, 45);
+			collumn++;
+			if (collumn == 3) {
+				collumn = 0;
+				line++;
+			}
 		}
 
 	}

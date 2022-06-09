@@ -10,7 +10,8 @@ public class Player {
 	
 	int number;
 	int score = 0;
-	Vector<Integer> ballsIn = new Vector<Integer>();
+	Vector<Integer> ballsInTmp = new Vector<Integer>();
+	Vector<Integer> ballsInAll = new Vector<Integer>();
 	
 	Player(int number){
 		this.number = number;
@@ -18,11 +19,23 @@ public class Player {
 	
 	void ballIn(int ballNbr)
 	{
-		ballsIn.add(ballNbr);
+		ballsInTmp.add(ballNbr);
 	}
 	
 	void restartPlayer()
 	{
-		ballsIn.clear();
+		ballsInTmp.clear();
+		ballsInAll.clear();
+	}
+	
+	String debugBall()
+	{
+		String out = "";
+		for(int ball : ballsInAll)
+		{
+			out+= ball;
+			out+= " ";
+		}
+		return out;
 	}
 }
