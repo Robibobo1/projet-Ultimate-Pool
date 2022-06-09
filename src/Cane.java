@@ -9,7 +9,7 @@ public class Cane {
 	Vector2 velocity;
 
 	float angle;
-	Point[] hitPoints = new Point[3];
+	Point[] hitPoints = new Point[24];
 	double magicAngle;
 	int lenght = 350;
 	int width = 10;
@@ -24,7 +24,7 @@ public class Cane {
 		this.velocity = new Vector2(0.1f, 0.1f);
 
 		this.angle = angle;
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < hitPoints.length; i++) {
 			hitPoints[i] = new Point();
 		}
 		magicAngle = Math.toDegrees(Math.atan(((double) width) / ((double) lenght)));
@@ -53,12 +53,16 @@ public class Cane {
 	}
 
 	void updateHitPoint() {
-		hitPoints[0].x = (int) (position.x + Math.sin(Math.toRadians(magicAngle - angle)) * lenght / 2);
-		hitPoints[0].y = (int) (position.y + Math.cos(Math.toRadians(magicAngle - angle)) * lenght / 2);
-		hitPoints[1].x = (int) (position.x + Math.sin(Math.toRadians(-angle)) * lenght / 2);
-		hitPoints[1].y = (int) (position.y + Math.cos(Math.toRadians(-angle)) * lenght / 2);
-		hitPoints[2].x = (int) (position.x + Math.sin(Math.toRadians(-magicAngle - angle)) * lenght / 2);
-		hitPoints[2].y = (int) (position.y + Math.cos(Math.toRadians(-magicAngle - angle)) * lenght / 2);
+		int distBetween = 12;
+		for (int i = 0; i < hitPoints.length / 3; i++) {
+			hitPoints[0 + 3 * i].x = (int) (position.x + Math.sin(Math.toRadians(magicAngle - angle)) * (lenght / 2 - i * distBetween));
+			hitPoints[0 + 3 * i].y = (int) (position.y + Math.cos(Math.toRadians(magicAngle - angle)) * (lenght / 2 - i * distBetween));
+			hitPoints[1 + 3 * i].x = (int) (position.x + Math.sin(Math.toRadians(-angle)) * (lenght / 2 - i * distBetween));
+			hitPoints[1 + 3 * i].y = (int) (position.y + Math.cos(Math.toRadians(-angle)) * (lenght / 2 - i * distBetween));
+			hitPoints[2 + 3 * i].x = (int) (position.x + Math.sin(Math.toRadians(-magicAngle - angle)) * (lenght / 2 - i * distBetween));
+			hitPoints[2 + 3 * i].y = (int) (position.y + Math.cos(Math.toRadians(-magicAngle - angle)) * (lenght / 2 - i * distBetween));
+		}
+		
 	}
 
 	Vector2 getVelocity() {

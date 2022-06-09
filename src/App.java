@@ -114,6 +114,8 @@ public class App extends PortableApplication {
 
 		showGameInfo(g);
 
+		//drawHelper(g);
+
 		PhysicsWorld.updatePhysics(Gdx.graphics.getDeltaTime());
 
 		for (int i = 0; i < 16; i++) {
@@ -469,22 +471,20 @@ public class App extends PortableApplication {
 	}
 
 	void showGameInfo(GdxGraphics g) {
-		
-		Color backColor = new Color(222f / 255 ,183f / 255,127f / 255,1);
+
+		Color backColor = new Color(222f / 255, 183f / 255, 127f / 255, 1);
 
 		int titleConst = 775;
 		int leftConst = 45;
-		
-		if(pNow.number == 1) {
+
+		if (pNow.number == 1) {
 			g.drawFilledRectangle(135, titleConst - 235, 220, 510, 0, Color.YELLOW);
 			g.drawFilledRectangle(1775, titleConst - 235, 220, 510, 0, Color.BLACK);
-		}
-		else {
+		} else {
 			g.drawFilledRectangle(135, titleConst - 235, 220, 510, 0, Color.BLACK);
 			g.drawFilledRectangle(1775, titleConst - 235, 220, 510, 0, Color.YELLOW);
 		}
 
-		
 		g.drawFilledRectangle(135, titleConst - 235, 210, 500, 0, backColor);
 		g.drawString(leftConst, titleConst, "Player " + p1.number, titleFont);
 		g.drawString(leftConst, titleConst - 65, "Score : " + p1.score, textFont);
@@ -509,7 +509,7 @@ public class App extends PortableApplication {
 		}
 
 		int rightConst = 1680;
-		
+
 		g.drawFilledRectangle(1775, titleConst - 235, 210, 500, 0, backColor);
 		g.drawString(rightConst, titleConst, "Player " + p2.number, titleFont);
 		g.drawString(rightConst, titleConst - 65, "Score : " + p2.score, textFont);
@@ -532,4 +532,11 @@ public class App extends PortableApplication {
 		}
 
 	}
+
+//	void drawHelper(GdxGraphics g) {
+//		Vector2 test = new Vector2(100,100);
+//		test.setLength(1000f);
+//		test.setAngle(myCane.angle);
+//		g.drawLine(myCane.position.x, myCane.position.y, test.x, test.y);
+//	}
 }
