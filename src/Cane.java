@@ -1,3 +1,4 @@
+
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import java.awt.Point;
@@ -17,6 +18,7 @@ public class Cane {
 	final float deltaTime = 1f / 60f;
 
 	Cane(Vector2 position, float angle) {
+		
 
 		this.oldPosition = position;
 		this.position = position;
@@ -34,7 +36,7 @@ public class Cane {
 	void setPosition(Vector2 position) {
 		oldPosition = this.position;
 		this.position = position;
-
+		
 		Vector2 deltaPos = new Vector2(position.x - oldPosition.x, position.y - oldPosition.y);
 		this.velocity.x = deltaPos.x / deltaTime;
 		this.velocity.y = deltaPos.y / deltaTime;
@@ -55,14 +57,20 @@ public class Cane {
 	void updateHitPoint() {
 		int distBetween = 12;
 		for (int i = 0; i < hitPoints.length / 3; i++) {
-			hitPoints[0 + 3 * i].x = (int) (position.x + Math.sin(Math.toRadians(magicAngle - angle)) * (lenght / 2 - i * distBetween));
-			hitPoints[0 + 3 * i].y = (int) (position.y + Math.cos(Math.toRadians(magicAngle - angle)) * (lenght / 2 - i * distBetween));
-			hitPoints[1 + 3 * i].x = (int) (position.x + Math.sin(Math.toRadians(-angle)) * (lenght / 2 - i * distBetween));
-			hitPoints[1 + 3 * i].y = (int) (position.y + Math.cos(Math.toRadians(-angle)) * (lenght / 2 - i * distBetween));
-			hitPoints[2 + 3 * i].x = (int) (position.x + Math.sin(Math.toRadians(-magicAngle - angle)) * (lenght / 2 - i * distBetween));
-			hitPoints[2 + 3 * i].y = (int) (position.y + Math.cos(Math.toRadians(-magicAngle - angle)) * (lenght / 2 - i * distBetween));
+			hitPoints[0 + 3 * i].x = (int) (position.x
+					+ Math.sin(Math.toRadians(magicAngle - angle)) * (lenght / 2 - i * distBetween));
+			hitPoints[0 + 3 * i].y = (int) (position.y
+					+ Math.cos(Math.toRadians(magicAngle - angle)) * (lenght / 2 - i * distBetween));
+			hitPoints[1 + 3 * i].x = (int) (position.x
+					+ Math.sin(Math.toRadians(-angle)) * (lenght / 2 - i * distBetween));
+			hitPoints[1 + 3 * i].y = (int) (position.y
+					+ Math.cos(Math.toRadians(-angle)) * (lenght / 2 - i * distBetween));
+			hitPoints[2 + 3 * i].x = (int) (position.x
+					+ Math.sin(Math.toRadians(-magicAngle - angle)) * (lenght / 2 - i * distBetween));
+			hitPoints[2 + 3 * i].y = (int) (position.y
+					+ Math.cos(Math.toRadians(-magicAngle - angle)) * (lenght / 2 - i * distBetween));
 		}
-		
+
 	}
 
 	Vector2 getVelocity() {
