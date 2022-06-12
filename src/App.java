@@ -63,7 +63,7 @@ public class App extends PortableApplication {
 	Vector2 force = new Vector2(1, 1);
 
 	App(Dimension screenSize) {
-		super(screenSize.width, screenSize.height, true);
+		super(screenSize.width, screenSize.height, false);
 		this.screenSize = screenSize;
 		ballPosition = new Vector2(this.screenSize.width / 2, this.screenSize.height / 2);
 
@@ -75,7 +75,7 @@ public class App extends PortableApplication {
 	}
 
 	public static void main(String[] args) {
-		Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
+		Dimension size = new Dimension(1920,1080);//Toolkit.getDefaultToolkit().getScreenSize();
 		new App(size);
 
 	}
@@ -477,8 +477,8 @@ public class App extends PortableApplication {
 		Color backColor = new Color(222f / 255, 183f / 255, 127f / 255, 1);
 
 		int titleConst = (int) (775f/1080f*screenSize.height);
-		int leftConst = (int) (45f/1080f*screenSize.width);
-		int rightConst = screenSize.width - 280;
+		int leftConst = 58;
+		int rightConst = screenSize.width - 240;
 
 		if (pNow.number == 1) {
 			g.drawFilledRectangle(leftConst + 90, titleConst - 235, 220, 510, 0, Color.YELLOW);
