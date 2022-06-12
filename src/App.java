@@ -133,17 +133,17 @@ public class App extends PortableApplication {
 
 		switch (stateNow) {
 		case Play:
-			try {
-				if (canePlacement()) {
-					pool.collisionList.clear();
-					stateNow = State.Wait;
-				}
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+			if(gameMode == Mode.Place) {
+				stateNow = State.Place;
+				break;
 			}
-			if (gameMode != Mode.Place)
-				cane.updateHitPoint();
-				drawCane(g);
+			
+			cane.updateHitPoint();
+			drawCane(g);
+			if (canePlacement()) {
+				pool.collisionList.clear();
+				stateNow = State.Wait;
+			}		
 			break;
 		case Wait:
 			waitForSomething();
@@ -188,7 +188,7 @@ public class App extends PortableApplication {
 		}
 	}
 
-	boolean canePlacement() throws InterruptedException {
+	boolean canePlacement() {
 
 		Vector2 mousePosition = new Vector2(Gdx.input.getX(), screenSize.height - Gdx.input.getY());
 		float angle = 90 + (float) Math
@@ -290,10 +290,16 @@ public class App extends PortableApplication {
 			clickCnt = 0;
 			boolean didFault = checkForFault();
 
+			if (stateNow != State.End)
+				stateNow = State.Play;
+
+			if (gameMode == Mode.Place)
+				stateNow = State.Place;
+
 			if (!pNow.ballsInTmp.isEmpty() && pNow.playerType == null) {
 				stateNow = State.Play;
 				int firstIn = pNow.ballsInTmp.firstElement();
-				if (firstIn == 0)
+				if (firstIn == 0 && pNow.ballsInTmp.size() > 1)
 					firstIn = pNow.ballsInTmp.elementAt(1);
 
 				if (isStriped(firstIn)) {
@@ -307,12 +313,6 @@ public class App extends PortableApplication {
 					return;
 				}
 			}
-
-			if (stateNow != State.End)
-				stateNow = State.Play;
-
-			if (gameMode == Mode.Place)
-				stateNow = State.Place;
 
 			if (gameMode == Mode.Double && !didFault) {
 				gameMode = Mode.Normal;
@@ -384,6 +384,18 @@ public class App extends PortableApplication {
 
 	void checkBallInHole() {
 		if (!pool.collisionList.isEmpty()) {
+			if (pool.collisionList.lastElement()[0] == 0) // Balle blanche dans trou
+			{
+				if (pool.collisionList.lastElement()[1] >= 20) {
+					pool.ballArray[0].setBodyLinearVelocity(0, 0);
+					pool.ballArray[0].destroy();
+					pool.ballArray[0].isInHole = true;
+					gameMode = Mode.Place;
+					pool.collisionList.remove(pool.collisionList.size() - 1);
+					return;
+				}
+			}
+			
 			for (int i = 20; i < 26; i++) {
 				if (pool.collisionList.lastElement()[0] == i) // Balle normale dans trou
 				{
@@ -392,18 +404,6 @@ public class App extends PortableApplication {
 					pool.ballArray[pool.collisionList.lastElement()[1]].setBodyLinearVelocity(0, 0);
 					pool.ballArray[pool.collisionList.lastElement()[1]].destroy();
 					pool.ballArray[pool.collisionList.lastElement()[1]].isInHole = true;
-					pool.collisionList.remove(pool.collisionList.size() - 1);
-					return;
-				}
-			}
-
-			if (pool.collisionList.lastElement()[0] == 0) // Balle blanche dans trou
-			{
-				if (pool.collisionList.lastElement()[1] >= 20) {
-					pool.ballArray[0].setBodyLinearVelocity(0, 0);
-					pool.ballArray[0].destroy();
-					pool.ballArray[0].isInHole = true;
-					gameMode = Mode.Place;
 					pool.collisionList.remove(pool.collisionList.size() - 1);
 					return;
 				}
