@@ -12,7 +12,7 @@ public class Cane {
 	float angle;
 	Point[] hitPoints = new Point[24];
 	double magicAngle;
-	int lenght = 350;
+	int lenght = 450;
 	int width = 10;
 
 	final float deltaTime = 1f / 60f;

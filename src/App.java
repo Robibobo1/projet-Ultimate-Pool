@@ -103,7 +103,7 @@ public class App extends PortableApplication {
 		imgTable = new Texture("data/images/Table.png");
 		gradient = new Texture("data/images/gradient.png");
 		balls = new Spritesheet("data/images/Boules.png", 100, 100);
-		cues = new Spritesheet("data/images/gameCues.png", 1789, 100);
+		cues = new Spritesheet("data/images/gameCues.png", 3578, 100);
 
 	}
 
@@ -114,7 +114,6 @@ public class App extends PortableApplication {
 		g.draw(imgTable, 302 + (screenSize.width - 1920f) / 2, 168 + (screenSize.height - 1080f) / 2,
 				pool.poolSize.width + 158, pool.poolSize.height + 164);
 		g.draw(gradient, screenSize.width / 2 - 200, screenSize.height - 90, forceScaleWidth, 25, 500, 500, 0, 0); // à
-																													// améliorer
 		showGameInfo(g);
 
 		PhysicsWorld.updatePhysics(Gdx.graphics.getDeltaTime());
@@ -143,7 +142,8 @@ public class App extends PortableApplication {
 				e.printStackTrace();
 			}
 			if (gameMode != Mode.Place)
-				cane.drawCane(g);
+				cane.updateHitPoint();
+				drawCane(g);
 			break;
 		case Wait:
 			waitForSomething();
@@ -163,6 +163,7 @@ public class App extends PortableApplication {
 		default:
 			break;
 		}
+
 		g.drawFPS();
 		g.drawString(20, 200, debugGameEngine());
 	}
@@ -288,12 +289,13 @@ public class App extends PortableApplication {
 		if (roundEnded()) {
 			clickCnt = 0;
 			boolean didFault = checkForFault();
-			
-			if(!pNow.ballsInTmp.isEmpty() && pNow.playerType == null)
-			{
+
+			if (!pNow.ballsInTmp.isEmpty() && pNow.playerType == null) {
+				stateNow = State.Play;
 				int firstIn = pNow.ballsInTmp.firstElement();
-				if(firstIn == 0) firstIn = pNow.ballsInTmp.elementAt(1);
-				
+				if (firstIn == 0)
+					firstIn = pNow.ballsInTmp.elementAt(1);
+
 				if (isStriped(firstIn)) {
 					pNow.playerType = Player.BallType.Striped;
 					pOther.playerType = Player.BallType.Solid;
@@ -305,7 +307,7 @@ public class App extends PortableApplication {
 					return;
 				}
 			}
-			
+
 			if (stateNow != State.End)
 				stateNow = State.Play;
 
@@ -356,9 +358,9 @@ public class App extends PortableApplication {
 				}
 			}
 		}
-		
+
 		if (!pNow.ballsInTmp.isEmpty()) {
-			
+
 			for (int ballIn : pNow.ballsInTmp) {
 				if (ballIn == 8 && pNow.score < 7) {
 					stateNow = State.End;
@@ -376,7 +378,7 @@ public class App extends PortableApplication {
 				}
 			}
 		}
-		
+
 		return false;
 	}
 
@@ -509,4 +511,14 @@ public class App extends PortableApplication {
 			}
 		}
 	}
+
+	void drawCane(GdxGraphics g) {
+		int spriteWidth = 25;
+		double spriteAngle = Math.toDegrees(Math.atan(((double) spriteWidth) / ((double) cane.lenght)));
+		g.draw(cues.sprites[pNow.number - 1][0],
+				(float) (cane.position.x + Math.sin(Math.toRadians(-spriteAngle - cane.angle)) * (cane.lenght / 2)),
+				(float) (cane.position.y + Math.cos(Math.toRadians(-spriteAngle - cane.angle)) * (cane.lenght / 2)), 0,
+				0, 600, spriteWidth, 1, 1, cane.angle - 90);
+	}
+
 }
