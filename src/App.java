@@ -1,4 +1,7 @@
 
+import java.awt.Dimension;
+import java.awt.Toolkit;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.files.FileHandle;
@@ -32,7 +35,7 @@ public class App extends PortableApplication {
 
 	Mode gameMode = Mode.Normal;
 
-	BitmapImage imgSol;
+	Texture imgSol;
 	Texture imgTable;
 	Texture gradient;
 	Spritesheet balls;
@@ -46,10 +49,12 @@ public class App extends PortableApplication {
 	int hasBeenPressed = 0;
 	int forceCanne = 0;
 	float forceScaleWidth;
+	
+	
 
 	int playerTurn = 0;
 	PoolSetup p;
-	int width, height;
+	Dimension screenSize;
 	Vector2 ballPosition;
 	DebugRenderer dbgRenderer;
 	World world = PhysicsWorld.getInstance();
@@ -57,11 +62,10 @@ public class App extends PortableApplication {
 	int clickCnt = 0;
 	Vector2 force = new Vector2(1, 1);
 
-	App(int width, int height) {
-		super(width, height, true);
-		this.width = width;
-		this.height = height;
-		ballPosition = new Vector2(this.width / 2, this.height / 2);
+	App(Dimension screenSize) {
+		super(screenSize.width, screenSize.height, true);
+		this.screenSize = screenSize;
+		ballPosition = new Vector2(this.screenSize.width / 2, this.screenSize.height / 2);
 
 		p1 = new Player(1);
 		p2 = new Player(2);
@@ -71,7 +75,8 @@ public class App extends PortableApplication {
 	}
 
 	public static void main(String[] args) {
-		new App(1920, 1080);
+		Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
+		new App(size);
 
 	}
 
@@ -97,8 +102,8 @@ public class App extends PortableApplication {
 		p.createPool();
 		myCane = new Cane(new Vector2(300, 150), 0);
 		forceScaleWidth = 1;
-		imgSol = new BitmapImage("data/images/Sol.png");
-		imgTable = new Texture("data/images/Table.png");
+		imgSol = new Texture("data/images/Sol.png");
+		imgTable = new Texture("data/images/Table2.png");
 		gradient = new Texture("data/images/gradient.png");
 		balls = new Spritesheet("data/images/Boules.png", 100, 100);
 	}
@@ -107,14 +112,11 @@ public class App extends PortableApplication {
 	public void onGraphicRender(GdxGraphics g) {
 		// TODO Auto-generated method stub
 		g.clear();
-
-		g.drawBackground(imgSol, 0, 0);
-		g.draw(imgTable, 280, 158, 1359, 765);
-		g.draw(gradient, width / 2 - 200, height - 90, forceScaleWidth, 25, 500, 500, 0, 0); // à améliorer
+		g.draw(imgSol, 0, 0,screenSize.width,screenSize.height);
+		g.draw(imgTable, 302 + (screenSize.width - 1920f)/2 , 165 + (screenSize.height - 1080f)/2, p.poolSize.width + 158 , p.poolSize.height + 164);
+		g.draw(gradient, screenSize.width / 2 - 200, screenSize.height - 90, forceScaleWidth, 25, 500, 500, 0, 0); // à améliorer
 
 		showGameInfo(g);
-
-		//drawHelper(g);
 
 		PhysicsWorld.updatePhysics(Gdx.graphics.getDeltaTime());
 
@@ -126,7 +128,7 @@ public class App extends PortableApplication {
 			}
 		}
 
-		// dbgRenderer.render(world, g.getCamera().combined);
+		dbgRenderer.render(world, g.getCamera().combined);
 
 		if (gameMode != Mode.Place)
 			ballPosition = p.ballArray[0].getBodyPosition();
@@ -149,7 +151,7 @@ public class App extends PortableApplication {
 			waitForSomething();
 			break;
 		case Place:
-			Vector2 mousePosition = new Vector2(Gdx.input.getX(), this.height - Gdx.input.getY());
+			Vector2 mousePosition = new Vector2(Gdx.input.getX(), screenSize.height - Gdx.input.getY());
 			if (clickCnt >= 1) {
 				p.placeWhite(mousePosition);
 				gameMode = Mode.Normal;
@@ -190,7 +192,7 @@ public class App extends PortableApplication {
 
 	boolean canePlacement() throws InterruptedException {
 
-		Vector2 mousePosition = new Vector2(Gdx.input.getX(), this.height - Gdx.input.getY());
+		Vector2 mousePosition = new Vector2(Gdx.input.getX(), screenSize.height - Gdx.input.getY());
 		float angle = 90 + (float) Math
 				.toDegrees(Math.atan((mousePosition.y - ballPosition.y) / (mousePosition.x - ballPosition.x)));
 		if (mousePosition.x - ballPosition.x < 0)
@@ -474,18 +476,19 @@ public class App extends PortableApplication {
 
 		Color backColor = new Color(222f / 255, 183f / 255, 127f / 255, 1);
 
-		int titleConst = 775;
-		int leftConst = 45;
+		int titleConst = (int) (775f/1080f*screenSize.height);
+		int leftConst = (int) (45f/1080f*screenSize.width);
+		int rightConst = screenSize.width - 280;
 
 		if (pNow.number == 1) {
-			g.drawFilledRectangle(135, titleConst - 235, 220, 510, 0, Color.YELLOW);
-			g.drawFilledRectangle(1775, titleConst - 235, 220, 510, 0, Color.BLACK);
+			g.drawFilledRectangle(leftConst + 90, titleConst - 235, 220, 510, 0, Color.YELLOW);
+			g.drawFilledRectangle(rightConst + 90, titleConst - 235, 220, 510, 0, Color.BLACK);
 		} else {
-			g.drawFilledRectangle(135, titleConst - 235, 220, 510, 0, Color.BLACK);
-			g.drawFilledRectangle(1775, titleConst - 235, 220, 510, 0, Color.YELLOW);
+			g.drawFilledRectangle(leftConst + 90, titleConst - 235, 220, 510, 0, Color.BLACK);
+			g.drawFilledRectangle(rightConst + 90, titleConst - 235, 220, 510, 0, Color.YELLOW);
 		}
 
-		g.drawFilledRectangle(135, titleConst - 235, 210, 500, 0, backColor);
+		g.drawFilledRectangle(leftConst + 90, titleConst - 235, 210, 500, 0, backColor);
 		g.drawString(leftConst, titleConst, "Player " + p1.number, titleFont);
 		g.drawString(leftConst, titleConst - 65, "Score : " + p1.score, textFont);
 		g.drawString(leftConst, titleConst - 115, "Ball type : ", textFont);
@@ -508,9 +511,7 @@ public class App extends PortableApplication {
 			}
 		}
 
-		int rightConst = 1680;
-
-		g.drawFilledRectangle(1775, titleConst - 235, 210, 500, 0, backColor);
+		g.drawFilledRectangle(rightConst + 90, titleConst - 235, 210, 500, 0, backColor);
 		g.drawString(rightConst, titleConst, "Player " + p2.number, titleFont);
 		g.drawString(rightConst, titleConst - 65, "Score : " + p2.score, textFont);
 		g.drawString(rightConst, titleConst - 115, "Ball type : ", textFont);
@@ -533,10 +534,4 @@ public class App extends PortableApplication {
 
 	}
 
-//	void drawHelper(GdxGraphics g) {
-//		Vector2 test = new Vector2(100,100);
-//		test.setLength(1000f);
-//		test.setAngle(myCane.angle);
-//		g.drawLine(myCane.position.x, myCane.position.y, test.x, test.y);
-//	}
 }
