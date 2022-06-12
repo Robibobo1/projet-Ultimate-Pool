@@ -5,7 +5,6 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.util.Vector;
 
-import ch.hevs.gdx2d.components.physics.primitives.PhysicsCircle;
 import ch.hevs.gdx2d.components.physics.primitives.PhysicsStaticBox;
 import ch.hevs.gdx2d.components.physics.primitives.PhysicsStaticLine;
 import ch.hevs.gdx2d.lib.physics.AbstractPhysicsObject;
@@ -49,7 +48,6 @@ public class Pool {
 		frictionBox = new PhysicsStaticBox(null, new Vector2(midP.x, midP.y), 10, 10);
 
 		placeWhite(new Vector2((int) (midP.x - (0.25 * poolSize.width)), (int) (midP.y)));
-
 		placeTriangle(new Point((int) (midP.x + (0.25 * poolSize.width)), (int) (midP.y)));
 	}
 
@@ -75,13 +73,6 @@ public class Pool {
 		frictionJointDef.bodyB = frictionBox.getBody();
 		frictionJointDef.collideConnected = false;
 		a.world.createJoint(frictionJointDef);
-	}
-
-	void destroyBalls() {
-		for (PhysicsCircle b : ballArray) {
-			b.destroy();
-		}
-
 	}
 
 	void placeTriangle(Point position) {

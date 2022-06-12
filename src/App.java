@@ -1,4 +1,3 @@
-
 import java.awt.Dimension;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -31,21 +30,22 @@ public class App extends PortableApplication {
 	}
 
 	Mode gameMode = Mode.Normal;
-	
+
 	World world = PhysicsWorld.getInstance();
 	Pool pool;
 	Cane cane;
 	DebugRenderer dbgRenderer;
-	
+
 	Texture imgSol;
 	Texture imgTable;
 	Texture gradient;
 	Spritesheet balls;
+	Spritesheet cues;
 
 	Player pNow, pOther, p1, p2;
 
 	BitmapFont titleFont, textFont;
-	
+
 	Dimension screenSize;
 	Vector2 ballPosition;
 
@@ -55,10 +55,10 @@ public class App extends PortableApplication {
 
 	int forceCane = 0;
 	float forceScaleWidth = 1;
-	
+
 	int clickCnt = 0;
 	Vector2 force = new Vector2(1, 1);
-	
+
 	App(Dimension screenSize) {
 		super(screenSize.width, screenSize.height, false);
 		this.screenSize = screenSize;
@@ -82,11 +82,11 @@ public class App extends PortableApplication {
 		FileHandle Dosis = Gdx.files.internal("data/font/Dosis.ttf");
 		FreeTypeFontParameter parameter = new FreeTypeFontParameter();
 		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Dosis);
-		
+
 		parameter.size = generator.scaleForPixelHeight(70);
 		parameter.color = Color.BLACK;
 		titleFont = generator.generateFont(parameter);
-		
+
 		parameter.size = generator.scaleForPixelHeight(40);
 		textFont = generator.generateFont(parameter);
 
@@ -98,20 +98,20 @@ public class App extends PortableApplication {
 		pool = new Pool(this);
 		pool.createPool();
 		cane = new Cane(new Vector2(300, 150), 0);
-		
-		
+
 		imgSol = new Texture("data/images/Sol.png");
-		imgTable = new Texture("data/images/Table2.png");
+		imgTable = new Texture("data/images/Table.png");
 		gradient = new Texture("data/images/gradient.png");
 		balls = new Spritesheet("data/images/Boules.png", 100, 100);
-		
+		cues = new Spritesheet("data/images/gameCues.png", 1789, 100);
+
 	}
 
 	@Override
 	public void onGraphicRender(GdxGraphics g) {
 		g.clear();
 		g.draw(imgSol, 0, 0, screenSize.width, screenSize.height);
-		g.draw(imgTable, 302 + (screenSize.width - 1920f) / 2, 165 + (screenSize.height - 1080f) / 2,
+		g.draw(imgTable, 302 + (screenSize.width - 1920f) / 2, 168 + (screenSize.height - 1080f) / 2,
 				pool.poolSize.width + 158, pool.poolSize.height + 164);
 		g.draw(gradient, screenSize.width / 2 - 200, screenSize.height - 90, forceScaleWidth, 25, 500, 500, 0, 0); // à
 																													// améliorer
@@ -288,22 +288,35 @@ public class App extends PortableApplication {
 		if (roundEnded()) {
 			clickCnt = 0;
 			boolean didFault = checkForFault();
-
+			
+			if(!pNow.ballsInTmp.isEmpty() && pNow.playerType == null)
+			{
+				int firstIn = pNow.ballsInTmp.firstElement();
+				if(firstIn == 0) firstIn = pNow.ballsInTmp.elementAt(1);
+				
+				if (isStriped(firstIn)) {
+					pNow.playerType = Player.BallType.Striped;
+					pOther.playerType = Player.BallType.Solid;
+					return;
+				}
+				if (isSolid(firstIn)) {
+					pNow.playerType = Player.BallType.Solid;
+					pOther.playerType = Player.BallType.Striped;
+					return;
+				}
+			}
+			
 			if (stateNow != State.End)
 				stateNow = State.Play;
 
 			if (gameMode == Mode.Place)
 				stateNow = State.Place;
 
-			if (pNow.playerType == null) {
-				nextPlayer();
-				return;
-			}
-
 			if (gameMode == Mode.Double && !didFault) {
 				gameMode = Mode.Normal;
 				return;
 			}
+
 			if (!pNow.ballsInTmp.isEmpty() && !didFault) {
 				pNow.ballsInTmp.clear();
 				gameMode = Mode.Normal;
@@ -316,38 +329,6 @@ public class App extends PortableApplication {
 
 	boolean checkForFault() {
 
-		if (!pNow.ballsInTmp.isEmpty()) {
-
-			if (pNow.playerType == null) {
-				int firstBall = pNow.ballsInTmp.firstElement();
-				if (isStriped(firstBall)) {
-					pNow.playerType = Player.BallType.Striped;
-					pOther.playerType = Player.BallType.Solid;
-				}
-				if (isSolid(firstBall)) {
-					pNow.playerType = Player.BallType.Solid;
-					pOther.playerType = Player.BallType.Striped;
-				}
-			}
-
-			for (int ballIn : pNow.ballsInTmp) {
-				if (ballIn == 8 && pNow.score < 7) {
-					stateNow = State.End;
-					return true;
-				}
-				if (isStriped(ballIn) && pNow.playerType == Player.BallType.Solid) {
-					if (gameMode == Mode.Normal)
-						gameMode = Mode.Double;
-					return true;
-				}
-				if (isSolid(ballIn) && pNow.playerType == Player.BallType.Striped) {
-					if (gameMode == Mode.Normal)
-						gameMode = Mode.Double;
-					return true;
-				}
-			}
-		}
-
 		if (gameMode == Mode.Place) {
 			return true;
 		}
@@ -357,6 +338,7 @@ public class App extends PortableApplication {
 			return true;
 
 		} else {
+
 			int[] firstCollision = pool.collisionList.firstElement();
 
 			if (firstCollision[0] == 0) { // Lis la première collision de la balle
@@ -374,6 +356,27 @@ public class App extends PortableApplication {
 				}
 			}
 		}
+		
+		if (!pNow.ballsInTmp.isEmpty()) {
+			
+			for (int ballIn : pNow.ballsInTmp) {
+				if (ballIn == 8 && pNow.score < 7) {
+					stateNow = State.End;
+					return true;
+				}
+				if (isStriped(ballIn) && pNow.playerType == Player.BallType.Solid) {
+					if (gameMode == Mode.Normal)
+						gameMode = Mode.Double;
+					return true;
+				}
+				if (isSolid(ballIn) && pNow.playerType == Player.BallType.Striped) {
+					if (gameMode == Mode.Normal)
+						gameMode = Mode.Double;
+					return true;
+				}
+			}
+		}
+		
 		return false;
 	}
 
