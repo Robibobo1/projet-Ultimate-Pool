@@ -23,7 +23,7 @@ import ch.hevs.gdx2d.lib.physics.PhysicsWorld;
 public class App extends PortableApplication {
 
 	enum State {
-		Play, Wait, Place, End
+		Play, Wait, Place, Win, Lose
 	}
 
 	State stateNow = State.Play;
@@ -166,9 +166,13 @@ public class App extends PortableApplication {
 				clickCnt = 0;
 			}
 			break;
-		case End:
-			System.out.println("END");
+		case Lose:
+			System.out.println("Lose");
+			break;	
+		case Win:
+			System.out.println("Win");
 			break;
+			
 		default:
 			break;
 		}
@@ -346,7 +350,7 @@ public class App extends PortableApplication {
 			clickCnt = 0;
 			boolean didFault = checkForFault();
 
-			if (stateNow != State.End)
+			if (stateNow != State.Lose)
 				stateNow = State.Play;
 
 			if (gameMode == Mode.Place)
@@ -419,7 +423,7 @@ public class App extends PortableApplication {
 
 			for (int ballIn : pNow.ballsInTmp) {
 				if (ballIn == 8 && pNow.score < 7) {
-					stateNow = State.End;
+					stateNow = State.Lose;
 					return true;
 				}
 				if (isStriped(ballIn) && pNow.playerType == Player.BallType.Solid) {
@@ -462,7 +466,7 @@ public class App extends PortableApplication {
 					pool.ballArray[pool.collisionList.lastElement()[1]].isInHole = true;
 					pool.collisionList.remove(pool.collisionList.size() - 1);
 					if (pool.collisionList.lastElement()[1] == 8 && pool.collisionList.lastElement()[0] == pNow.holeChosedNbr) {
-						youWin();
+						stateNow = State.Win;
 					}
 					return;
 				}
