@@ -23,7 +23,7 @@ import ch.hevs.gdx2d.lib.physics.PhysicsWorld;
 public class App extends PortableApplication {
 
 	enum State {
-		Play, Wait, Place, End
+		Play, Wait, Place, Win, Lose
 	}
 
 	State stateNow = State.Play;
@@ -69,7 +69,7 @@ public class App extends PortableApplication {
 
 		p1 = new Player(1);
 		p2 = new Player(2);
-		
+
 		Random rand = new Random();
 		p1.skin = rand.nextInt(2) * 2;
 		p2.skin = rand.nextInt(2) * 2 + 1;
@@ -130,7 +130,7 @@ public class App extends PortableApplication {
 		g.draw(imgTable, 302 + (screenSize.width - 1920f) / 2, 168 + (screenSize.height - 1080f) / 2,
 				pool.poolSize.width + 158, pool.poolSize.height + 164);
 		g.draw(gradient, screenSize.width / 2 - 200, screenSize.height - 90, forceScaleWidth, 25, 500, 500, 0, 0); // à
-		
+
 		setPlayerScore();
 		showGameInfo(g);
 
@@ -175,9 +175,13 @@ public class App extends PortableApplication {
 				clickCnt = 0;
 			}
 			break;
-		case End:
-			System.out.println("END");
+		case Lose:
+			System.out.println("Lose");
+			break;	
+		case Win:
+			System.out.println("Win");
 			break;
+			
 		default:
 			break;
 		}
@@ -200,7 +204,7 @@ public class App extends PortableApplication {
 				clickCnt--;
 		}
 
-		if (button == Input.Buttons.MIDDLE) 
+		if (button == Input.Buttons.MIDDLE)
 			pNow.ballsInAll.add(2);
 	}
 
@@ -222,16 +226,58 @@ public class App extends PortableApplication {
 			cane.setAngle(angle);
 			break;
 		case 1:
-			cane.setPosition(mousePosition);
-			if (collisionPoint != null) {
-				float lenght = cane.getVelocity().len() / 3;
-				force.setLength(lenght);
-				force.setAngle(cane.getVelocity().angle());
-				if (!Double.isNaN(force.len()))
-					pool.ballArray[0].applyBodyForce(force, collisionPoint, CreateLwjglApplication);
+			
+			if(pNow.allIn && !pNow.holeChosed) {
+				float mouseX = mousePosition.x;
+				float mouseY = mousePosition.y;
+				
+				if (mouseY > screenSize.height/2) {
+					if (mouseX < screenSize.width/2-200) {
+						//haut gauche
+						pNow.holeChosedNbr = 20;
+						System.out.println("haut gauche");
+						pNow.holeChosed = true;
+					}
+					else if (mouseX > screenSize.width/2+200) {
+						//Haut droite
+						pNow.holeChosedNbr = 22;
+						System.out.println("haut droite");
+						}
+					else {
+						//Haut milieu
+						pNow.holeChosedNbr = 21;
+						System.out.println("haut milieu");
+					}
+				}
+				else{
+					if (mouseX < screenSize.width/2-200){
+						//Bas gauche
+						pNow.holeChosedNbr = 23;
+					}
+					else if (mouseX > screenSize.width/2-200) {
+						//Bas droite
+						pNow.holeChosedNbr = 25;
+					}
+					else {
+						//Bas milieu
+						pNow.holeChosedNbr = 24;
+					}
+				}
+				
 				clickCnt = 0;
-				return true;
 			}
+				else {
+					cane.setPosition(mousePosition);
+					if (collisionPoint != null) {
+						float lenght = cane.getVelocity().len() / 3;
+						force.setLength(lenght);
+						force.setAngle(cane.getVelocity().angle());
+						if (!Double.isNaN(force.len()))
+							pool.ballArray[0].applyBodyForce(force, collisionPoint, CreateLwjglApplication);
+						clickCnt = 0;
+						return true;
+					}
+				}
 			break;
 		case 2:
 			waitPress = true;
@@ -314,7 +360,7 @@ public class App extends PortableApplication {
 			clickCnt = 0;
 			boolean didFault = checkForFault();
 
-			if (stateNow != State.End)
+			if (stateNow != State.Lose)
 				stateNow = State.Play;
 
 			if (gameMode == Mode.Place)
@@ -387,7 +433,7 @@ public class App extends PortableApplication {
 
 			for (int ballIn : pNow.ballsInTmp) {
 				if (ballIn == 8 && pNow.score < 7) {
-					stateNow = State.End;
+					stateNow = State.Lose;
 					return true;
 				}
 				if (isStriped(ballIn) && pNow.playerType == Player.BallType.Solid) {
@@ -428,6 +474,9 @@ public class App extends PortableApplication {
 					pool.ballArray[pool.collisionList.lastElement()[1]].destroy();
 					pool.ballArray[pool.collisionList.lastElement()[1]].isInHole = true;
 					pool.collisionList.remove(pool.collisionList.size() - 1);
+					if (pool.collisionList.lastElement()[1] == 8 && pool.collisionList.lastElement()[0] == pNow.holeChosedNbr) {
+						stateNow = State.Win;
+					}
 					return;
 				}
 			}
@@ -505,7 +554,8 @@ public class App extends PortableApplication {
 		int line = 0;
 
 		for (int ball : p1.ballsInAll) {
-			if(ball == 0) continue;
+			if (ball == 0)
+				continue;
 			g.draw(balls.sprites[0][ball], leftConst + 5 + collumn * 60, titleConst - 260 - line * 60, 45, 45);
 			collumn++;
 			if (collumn == 3) {
@@ -527,7 +577,8 @@ public class App extends PortableApplication {
 		collumn = 0;
 		line = 0;
 		for (int ball : p2.ballsInAll) {
-			if(ball == 0) continue;
+			if (ball == 0)
+				continue;
 			g.draw(balls.sprites[0][ball], rightConst + 5 + collumn * 60, titleConst - 260 - line * 60, 45, 45);
 			collumn++;
 			if (collumn == 3) {
@@ -536,23 +587,25 @@ public class App extends PortableApplication {
 			}
 		}
 	}
-	
-	void setPlayerScore()
-	{
+
+	void setPlayerScore() {
 		int cnt = 0;
-		if(pNow.playerType == Player.BallType.Solid)
-		{
+		if (pNow.playerType == Player.BallType.Solid) {
 			for (int i = 1; i < 8; i++) {
-				if(pool.ballArray[i].isInHole) cnt++;
+				if (pool.ballArray[i].isInHole)
+					cnt++;
 			}
 		}
-		if(pNow.playerType == Player.BallType.Striped)
-		{
+		if (pNow.playerType == Player.BallType.Striped) {
 			for (int i = 9; i < 16; i++) {
-				if(pool.ballArray[i].isInHole) cnt++;
+				if (pool.ballArray[i].isInHole)
+					cnt++;
 			}
 		}
 		pNow.score = cnt;
+		if (pNow.score == 7) {
+			pNow.allIn = true;
+		}
 	}
 
 	void drawCane(GdxGraphics g) {
