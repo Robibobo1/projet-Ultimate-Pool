@@ -42,12 +42,12 @@ public class App extends PortableApplication {
 	Texture imgSol;
 	Texture imgTable;
 	Texture gradient;
-	Spritesheet balls;
+	Spritesheet balls; // i love titi toto <3
 	Spritesheet cues;
 
 	Player pNow, pOther, p1, p2;
 
-	BitmapFont titleFont, textFont;
+	BitmapFont titleFont, textFont, endFont, endLittleFont;
 
 	Dimension screenSize;
 	Vector2 ballPosition;
@@ -63,7 +63,7 @@ public class App extends PortableApplication {
 	Vector2 force = new Vector2(1, 1);
 
 	App(Dimension screenSize) {
-		super(screenSize.width, screenSize.height, true);
+		super(screenSize.width, screenSize.height, false);
 		this.screenSize = screenSize;
 		ballPosition = new Vector2(0, 0);
 
@@ -87,6 +87,7 @@ public class App extends PortableApplication {
 	public void onInit() {
 
 		FileHandle Dosis = Gdx.files.internal("data/font/Dosis.ttf");
+		FileHandle Jokerman = Gdx.files.internal("data/font/Jokerman.ttf");
 		FreeTypeFontParameter parameter = new FreeTypeFontParameter();
 		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Dosis);
 
@@ -96,6 +97,14 @@ public class App extends PortableApplication {
 
 		parameter.size = generator.scaleForPixelHeight(40);
 		textFont = generator.generateFont(parameter);
+		
+		parameter.size = generator.scaleForPixelHeight(100);
+		parameter.color = Color.WHITE;
+		generator = new FreeTypeFontGenerator(Jokerman);
+		endFont = generator.generateFont(parameter);
+		
+		parameter.size = generator.scaleForPixelHeight(60);
+		endLittleFont = generator.generateFont(parameter);
 
 		world.setGravity(new Vector2(0, 0));
 		World.setVelocityThreshold(0.0001f);
@@ -135,7 +144,7 @@ public class App extends PortableApplication {
 			}
 		}
 
-		//dbgRenderer.render(world, g.getCamera().combined);
+		dbgRenderer.render(world, g.getCamera().combined);
 
 		if (gameMode != Mode.Place)
 			ballPosition = pool.ballArray[0].getBodyPosition();
@@ -172,7 +181,7 @@ public class App extends PortableApplication {
 		default:
 			break;
 		}
-
+		
 		g.drawFPS();
 		g.drawString(20, 200, debugGameEngine());
 	}
@@ -240,7 +249,6 @@ public class App extends PortableApplication {
 				}
 			}
 			if (!isPressed && hasBeenPressed) {
-				System.out.println(forceCane);
 				float newPosX;
 				float newPosY;
 
@@ -276,6 +284,8 @@ public class App extends PortableApplication {
 	public void onKeyUp(int input) {
 		if (input == Input.Keys.SPACE)
 			isPressed = false;
+		if(input == Input.Keys.ENTER)
+			System.exit(1);
 		if (input == Input.Keys.NUM_1)
 			pNow.skin = 0;
 		if (input == Input.Keys.NUM_2)
@@ -392,7 +402,6 @@ public class App extends PortableApplication {
 				}
 			}
 		}
-
 		return false;
 	}
 
@@ -553,6 +562,20 @@ public class App extends PortableApplication {
 				(float) (cane.position.x + Math.sin(Math.toRadians(-spriteAngle - cane.angle)) * (cane.lenght / 2)),
 				(float) (cane.position.y + Math.cos(Math.toRadians(-spriteAngle - cane.angle)) * (cane.lenght / 2)), 0,
 				0, 600, spriteWidth, 1, 1, cane.angle - 90);
+	}
+	
+	void youWin(GdxGraphics g){
+		g.drawFilledRectangle(g.getScreenWidth() / 2, g.getScreenHeight() / 2,830, 310, 0, Color.PINK);
+		g.drawFilledRectangle(g.getScreenWidth() / 2, g.getScreenHeight() / 2, 820, 300, 0, Color.BLACK);
+		g.drawString(g.getScreenWidth()/2 - 365, g.getScreenHeight() / 2 + 105, "Bravo tu as gagné !", endFont);
+		g.drawString(g.getScreenWidth()/2 - 370,g.getScreenHeight() / 2 - 35,"Appuie sur Enter pour éteindre le jeu.",endLittleFont);
+	}
+	
+	void youLoose(GdxGraphics g){
+		g.drawFilledRectangle(g.getScreenWidth() / 2, g.getScreenHeight() / 2,830, 310, 0, Color.RED);
+		g.drawFilledRectangle(g.getScreenWidth() / 2, g.getScreenHeight() / 2, 820, 300, 0, Color.BLACK);
+		g.drawString(g.getScreenWidth()/2 - 365, g.getScreenHeight() / 2 + 105, "Tu as perdu ahah", endFont);
+		g.drawString(g.getScreenWidth()/2 - 370,g.getScreenHeight() / 2 - 35,"Appuie sur Enter pour éteindre le jeu.",endLittleFont);
 	}
 
 }
