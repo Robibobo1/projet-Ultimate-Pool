@@ -135,7 +135,7 @@ public class App extends PortableApplication {
 			}
 		}
 
-		dbgRenderer.render(world, g.getCamera().combined);
+		//dbgRenderer.render(world, g.getCamera().combined);
 
 		if (gameMode != Mode.Place)
 			ballPosition = pool.ballArray[0].getBodyPosition();
@@ -518,6 +518,7 @@ public class App extends PortableApplication {
 		collumn = 0;
 		line = 0;
 		for (int ball : p2.ballsInAll) {
+			if(ball == 0) continue;
 			g.draw(balls.sprites[0][ball], rightConst + 5 + collumn * 60, titleConst - 260 - line * 60, 45, 45);
 			collumn++;
 			if (collumn == 3) {
