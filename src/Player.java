@@ -1,3 +1,4 @@
+import java.util.Random;
 import java.util.Vector;
 
 public class Player {
@@ -10,6 +11,7 @@ public class Player {
 
 	int number;
 	int score = 0;
+	int skin = 0;
 
 	Vector<Integer> ballsInTmp = new Vector<Integer>();
 	Vector<Integer> ballsInAll = new Vector<Integer>();

@@ -1,4 +1,6 @@
 import java.awt.Dimension;
+import java.util.Random;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.files.FileHandle;
@@ -9,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
+
 import ch.hevs.gdx2d.components.bitmaps.Spritesheet;
 import ch.hevs.gdx2d.components.physics.primitives.PhysicsCircle;
 import ch.hevs.gdx2d.components.physics.utils.PhysicsScreenBoundaries;
@@ -60,12 +63,16 @@ public class App extends PortableApplication {
 	Vector2 force = new Vector2(1, 1);
 
 	App(Dimension screenSize) {
-		super(screenSize.width, screenSize.height, false);
+		super(screenSize.width, screenSize.height, true);
 		this.screenSize = screenSize;
 		ballPosition = new Vector2(0, 0);
 
 		p1 = new Player(1);
 		p2 = new Player(2);
+		
+		Random rand = new Random();
+		p1.skin = rand.nextInt(2) * 2;
+		p2.skin = rand.nextInt(2) * 2 + 1;
 
 		pNow = p1;
 		pOther = p2;
@@ -114,6 +121,8 @@ public class App extends PortableApplication {
 		g.draw(imgTable, 302 + (screenSize.width - 1920f) / 2, 168 + (screenSize.height - 1080f) / 2,
 				pool.poolSize.width + 158, pool.poolSize.height + 164);
 		g.draw(gradient, screenSize.width / 2 - 200, screenSize.height - 90, forceScaleWidth, 25, 500, 500, 0, 0); // à
+		
+		setPlayerScore();
 		showGameInfo(g);
 
 		PhysicsWorld.updatePhysics(Gdx.graphics.getDeltaTime());
@@ -133,17 +142,17 @@ public class App extends PortableApplication {
 
 		switch (stateNow) {
 		case Play:
-			if(gameMode == Mode.Place) {
+			if (gameMode == Mode.Place) {
 				stateNow = State.Place;
 				break;
 			}
-			
+
 			cane.updateHitPoint();
 			drawCane(g);
 			if (canePlacement()) {
 				pool.collisionList.clear();
 				stateNow = State.Wait;
-			}		
+			}
 			break;
 		case Wait:
 			waitForSomething();
@@ -182,10 +191,8 @@ public class App extends PortableApplication {
 				clickCnt--;
 		}
 
-		if (button == Input.Buttons.MIDDLE) {
+		if (button == Input.Buttons.MIDDLE) 
 			pNow.ballsInAll.add(2);
-
-		}
 	}
 
 	boolean canePlacement() {
@@ -262,22 +269,29 @@ public class App extends PortableApplication {
 	}
 
 	public void onKeyDown(int input) {
-		if (input == Input.Keys.SPACE && waitPress) {
+		if (input == Input.Keys.SPACE && waitPress)
 			isPressed = true;
-		}
 	}
 
 	public void onKeyUp(int input) {
-		if (input == Input.Keys.SPACE) {
+		if (input == Input.Keys.SPACE)
 			isPressed = false;
-		}
+		if (input == Input.Keys.NUM_1)
+			pNow.skin = 0;
+		if (input == Input.Keys.NUM_2)
+			pNow.skin = 1;
+		if (input == Input.Keys.NUM_3)
+			pNow.skin = 2;
+		if (input == Input.Keys.NUM_4)
+			pNow.skin = 3;
+		if (input == Input.Keys.NUM_5)
+			pNow.skin = 4;
 	}
 
 	boolean roundEnded() {
 		for (PhysicsCircle c : pool.ballArray) {
-			if (c.getBodyLinearVelocity().len() > 0.001f) {
+			if (c.getBodyLinearVelocity().len() > 0.001f)
 				return false;
-			}
 		}
 		return true;
 	}
@@ -395,7 +409,7 @@ public class App extends PortableApplication {
 					return;
 				}
 			}
-			
+
 			for (int i = 20; i < 26; i++) {
 				if (pool.collisionList.lastElement()[0] == i) // Balle normale dans trou
 				{
@@ -482,6 +496,7 @@ public class App extends PortableApplication {
 		int line = 0;
 
 		for (int ball : p1.ballsInAll) {
+			if(ball == 0) continue;
 			g.draw(balls.sprites[0][ball], leftConst + 5 + collumn * 60, titleConst - 260 - line * 60, 45, 45);
 			collumn++;
 			if (collumn == 3) {
@@ -511,11 +526,29 @@ public class App extends PortableApplication {
 			}
 		}
 	}
+	
+	void setPlayerScore()
+	{
+		int cnt = 0;
+		if(pNow.playerType == Player.BallType.Solid)
+		{
+			for (int i = 1; i < 8; i++) {
+				if(pool.ballArray[i].isInHole) cnt++;
+			}
+		}
+		if(pNow.playerType == Player.BallType.Striped)
+		{
+			for (int i = 9; i < 16; i++) {
+				if(pool.ballArray[i].isInHole) cnt++;
+			}
+		}
+		pNow.score = cnt;
+	}
 
 	void drawCane(GdxGraphics g) {
 		int spriteWidth = 25;
 		double spriteAngle = Math.toDegrees(Math.atan(((double) spriteWidth) / ((double) cane.lenght)));
-		g.draw(cues.sprites[pNow.number - 1][0],
+		g.draw(cues.sprites[pNow.skin][0],
 				(float) (cane.position.x + Math.sin(Math.toRadians(-spriteAngle - cane.angle)) * (cane.lenght / 2)),
 				(float) (cane.position.y + Math.cos(Math.toRadians(-spriteAngle - cane.angle)) * (cane.lenght / 2)), 0,
 				0, 600, spriteWidth, 1, 1, cane.angle - 90);
