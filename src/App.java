@@ -12,6 +12,8 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFont
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 
+import ch.hevs.gdx2d.components.audio.MusicPlayer;
+import ch.hevs.gdx2d.components.audio.SoundSample;
 import ch.hevs.gdx2d.components.bitmaps.Spritesheet;
 import ch.hevs.gdx2d.components.physics.primitives.PhysicsCircle;
 import ch.hevs.gdx2d.components.physics.utils.PhysicsScreenBoundaries;
@@ -51,6 +53,11 @@ public class App extends PortableApplication {
 
 	Dimension screenSize;
 	Vector2 ballPosition;
+	
+	SoundSample hitHard;
+	SoundSample pocket;
+	boolean collisionDetectedPocket = false;
+	boolean collisionDetectedBall = false;
 
 	boolean waitPress = false;
 	boolean isPressed = false;
@@ -89,7 +96,7 @@ public class App extends PortableApplication {
 		FileHandle Dosis = Gdx.files.internal("data/font/Dosis.ttf");
 		FreeTypeFontParameter parameter = new FreeTypeFontParameter();
 		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Dosis);
-
+		
 		parameter.size = generator.scaleForPixelHeight(70);
 		parameter.color = Color.BLACK;
 		titleFont = generator.generateFont(parameter);
@@ -111,7 +118,9 @@ public class App extends PortableApplication {
 		gradient = new Texture("data/images/gradient.png");
 		balls = new Spritesheet("data/images/Boules.png", 100, 100);
 		cues = new Spritesheet("data/images/gameCues.png", 3578, 100);
-
+		
+		hitHard = new SoundSample("data/Sounds/hitHard.mp3");
+		pocket = new SoundSample("data/Sounds/inPocket.mp3");
 	}
 
 	@Override
@@ -139,6 +148,21 @@ public class App extends PortableApplication {
 
 		if (gameMode != Mode.Place)
 			ballPosition = pool.ballArray[0].getBodyPosition();
+		
+		if (collisionDetectedPocket) {
+			hitHard.setVolume((float) 0.05);
+			pocket.play();
+			System.out.println("sound played");
+			collisionDetectedPocket = false;
+		}
+		
+		if (collisionDetectedBall) {
+			hitHard.setVolume((float) 0.05);
+			hitHard.play();
+			System.out.println("sound played");
+			collisionDetectedBall = false;
+		}
+
 
 		switch (stateNow) {
 		case Play:
@@ -216,59 +240,17 @@ public class App extends PortableApplication {
 			cane.setPosition(mousePosition);
 			cane.setAngle(angle);
 			break;
-		case 1:
-			
-			if(pNow.allIn && !pNow.holeChosed) {
-				float mouseX = mousePosition.x;
-				float mouseY = mousePosition.y;
-				
-				if (mouseY > screenSize.height/2) {
-					if (mouseX < screenSize.width/2-200) {
-						//haut gauche
-						pNow.holeChosedNbr = 20;
-						System.out.println("haut gauche");
-						pNow.holeChosed = true;
-					}
-					else if (mouseX > screenSize.width/2+200) {
-						//Haut droite
-						pNow.holeChosedNbr = 22;
-						System.out.println("haut droite");
-						}
-					else {
-						//Haut milieu
-						pNow.holeChosedNbr = 21;
-						System.out.println("haut milieu");
-					}
-				}
-				else{
-					if (mouseX < screenSize.width/2-200){
-						//Bas gauche
-						pNow.holeChosedNbr = 23;
-					}
-					else if (mouseX > screenSize.width/2-200) {
-						//Bas droite
-						pNow.holeChosedNbr = 25;
-					}
-					else {
-						//Bas milieu
-						pNow.holeChosedNbr = 24;
-					}
-				}
-				
+		case 1:				
+			cane.setPosition(mousePosition);
+			if (collisionPoint != null) {
+				float lenght = cane.getVelocity().len() / 3;
+				force.setLength(lenght);
+				force.setAngle(cane.getVelocity().angle());
+				if (!Double.isNaN(force.len()))
+					pool.ballArray[0].applyBodyForce(force, collisionPoint, CreateLwjglApplication);
 				clickCnt = 0;
-			}
-				else {
-					cane.setPosition(mousePosition);
-					if (collisionPoint != null) {
-						float lenght = cane.getVelocity().len() / 3;
-						force.setLength(lenght);
-						force.setAngle(cane.getVelocity().angle());
-						if (!Double.isNaN(force.len()))
-							pool.ballArray[0].applyBodyForce(force, collisionPoint, CreateLwjglApplication);
-						clickCnt = 0;
-						return true;
-					}
-				}
+				return true;
+				}	
 			break;
 		case 2:
 			waitPress = true;
@@ -465,9 +447,6 @@ public class App extends PortableApplication {
 					pool.ballArray[pool.collisionList.lastElement()[1]].destroy();
 					pool.ballArray[pool.collisionList.lastElement()[1]].isInHole = true;
 					pool.collisionList.remove(pool.collisionList.size() - 1);
-					if (pool.collisionList.lastElement()[1] == 8 && pool.collisionList.lastElement()[0] == pNow.holeChosedNbr) {
-						stateNow = State.Win;
-					}
 					return;
 				}
 			}
