@@ -55,6 +55,8 @@ public class App extends PortableApplication {
 	boolean waitPress = false;
 	boolean isPressed = false;
 	boolean hasBeenPressed = false;
+	
+	boolean allIn = false;
 
 	int forceCane = 0;
 	float forceScaleWidth = 1;
@@ -544,6 +546,9 @@ public class App extends PortableApplication {
 			}
 		}
 		pNow.score = cnt;
+		if(pNow.score == 7) {
+			allIn = true;
+		}
 	}
 
 	void drawCane(GdxGraphics g) {
