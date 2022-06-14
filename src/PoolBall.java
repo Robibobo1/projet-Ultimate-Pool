@@ -20,21 +20,21 @@ public class PoolBall extends PhysicsCircle {
 	//System.out.println("autre collision");
 		int obj1;
 		int obj2;
+		
 		try {
 			obj1 = Integer.parseInt(name);
 			obj2 = Integer.parseInt(other.name);
 			System.out.println("vitesse");
 			System.out.println(a.pool.ballArray[obj1].getBody().getLinearVelocity().len());
 			if (obj1 >= 20 || obj2 >= 20) {
-				a.collisionDetectedPocket = true;
+				a.collisionSound = 0;
 			}
 			else if(a.pool.ballArray[obj1].getBody().getLinearVelocity().len() < 3)
 			{
-				
-				a.collisionDetectedBallSoft = true;
+				a.collisionSound = 2;
 			}
 			else if(a.pool.ballArray[obj1].getBody().getLinearVelocity().len() >= 3){
-				a.collisionDetectedBall = true;
+				a.collisionSound = 1;
 			}
 		} catch (Exception e) {
 		}

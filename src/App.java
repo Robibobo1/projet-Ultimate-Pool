@@ -55,15 +55,18 @@ public class App extends PortableApplication {
 
 	Dimension screenSize;
 	Vector2 ballPosition;
-	
+
 	SoundSample hitHard;
 	SoundSample hitCane;
 	SoundSample pocket;
 	SoundSample hitSoft;
-	boolean collisionDetectedPocket = false;
-	boolean collisionDetectedBall = false;
-	boolean collisionDetectedBallSoft = false;
-	boolean collisionDetectedCane = false;
+
+	// Pocket = 0
+	// ball = 1
+	// soft = 2
+	// cane = 3
+
+	int collisionSound = -1;
 
 	// Point milieu des trous
 	Point[] holePoint;
@@ -128,7 +131,7 @@ public class App extends PortableApplication {
 		FileHandle Jokerman = Gdx.files.internal("data/font/Jokerman.ttf");
 		FreeTypeFontParameter parameter = new FreeTypeFontParameter();
 		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Dosis);
-		
+
 		parameter.size = generator.scaleForPixelHeight(70);
 		parameter.color = Color.BLACK;
 		titleFont = generator.generateFont(parameter);
@@ -196,34 +199,26 @@ public class App extends PortableApplication {
 
 		if (gameMode != Mode.Place)
 			ballPosition = pool.ballArray[0].getBodyPosition();
-		
-		if (collisionDetectedPocket) {
-			hitHard.setVolume((float) 0.05);
-			pocket.play();
-			System.out.println("sound played");
-			collisionDetectedPocket = false;
-		}
-		
-		if (collisionDetectedBall) {
-			hitHard.setVolume((float) 0.05);
-			hitHard.play();
-			System.out.println("sound played");
-			collisionDetectedBall = false;
-		}
 
-		if (collisionDetectedBallSoft) {
-			hitSoft.setVolume((float) 0.05);
+		hitHard.setVolume((float) 0.05);
+		switch (collisionSound) {
+		case 0:
+			pocket.play();
+			break;
+		case 1:
+			hitHard.play();
+			break;
+		case 2:
 			hitSoft.play();
-			System.out.println("sound played (soft)");
-			collisionDetectedBallSoft = false;
-		}
-		
-		if (collisionDetectedCane) {
+			break;
+		case 3:
 			hitCane.setVolume((float) 0.1);
 			hitCane.play();
-			System.out.println("sound played (Cane)");
-			collisionDetectedCane = false;
+			break;
+		default:
+			break;
 		}
+		collisionSound = -1;
 
 		switch (stateNow) {
 		case Play:
@@ -343,7 +338,7 @@ public class App extends PortableApplication {
 					clickCnt = 0;
 					forceCane = 0;
 					hasBeenPressed = false;
-					collisionDetectedCane = true;
+					collisionSound = 3;
 					return true;
 				}
 			}
@@ -668,7 +663,7 @@ public class App extends PortableApplication {
 					cnt++;
 			}
 		}
-		pNow.score = cnt;
+		pNow.score = 7;// cnt;
 	}
 
 	void drawCane(GdxGraphics g) {
