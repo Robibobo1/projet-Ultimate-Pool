@@ -15,7 +15,6 @@ public class PoolBall extends PhysicsCircle {
 
 	App a;
 	boolean isInHole = false;
-	boolean collisionDetected;
 	int holeNbr = 0;
 
 	// ------------------------------------------------------------------
