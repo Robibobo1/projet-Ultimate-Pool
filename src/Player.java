@@ -1,6 +1,11 @@
-import java.util.Random;
 import java.util.Vector;
 
+//------------------------------------------------------------------
+// Player
+//------------------------------------------------------------------
+// Classe stockant toutes les infos sur le joueur, les balles mises,
+// ses points, la couleur de son équipe et le sprite de sa canne.
+//------------------------------------------------------------------
 public class Player {
 
 	static enum BallType {
@@ -19,19 +24,17 @@ public class Player {
 	Vector<Integer> ballsInTmp = new Vector<Integer>();
 	Vector<Integer> ballsInAll = new Vector<Integer>();
 
+	// ------------------------------------------------------------------
+	// Player
+	// ------------------------------------------------------------------
+	// Constructeur de la classe Player
+	// Reçoit le numéro du joeur en paramètre
+	// ------------------------------------------------------------------
 	Player(int number) {
 		this.number = number;
 	}
 
-	void ballIn(int ballNbr) {
-		ballsInTmp.add(ballNbr);
-	}
-
-	void restartPlayer() {
-		ballsInTmp.clear();
-		ballsInAll.clear();
-	}
-
+	// String de debeug
 	String debugBall() {
 		String out = "";
 		for (int ball : ballsInAll) {

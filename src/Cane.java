@@ -4,6 +4,13 @@ import com.badlogic.gdx.math.Vector2;
 import java.awt.Point;
 import ch.hevs.gdx2d.lib.GdxGraphics;
 
+//------------------------------------------------------------------
+// Cane
+//------------------------------------------------------------------
+// Clase définissant tous les points important de la canne de billard.
+// Ici sont calculés les hitPoints servant à détecter la collision 
+// avec la balle blanche.
+//------------------------------------------------------------------
 public class Cane {
 
 	Vector2 oldPosition, position;
@@ -17,9 +24,13 @@ public class Cane {
 
 	final float deltaTime = 1f / 60f;
 
+	// ------------------------------------------------------------------
+	// Cane
+	// ------------------------------------------------------------------
+	// Constructeur de la classe Cane
+	// Reçoit la positio et l'angle en argument
+	// ------------------------------------------------------------------
 	Cane(Vector2 position, float angle) {
-		
-
 		this.oldPosition = position;
 		this.position = position;
 
@@ -33,6 +44,12 @@ public class Cane {
 		updateHitPoint();
 	}
 
+	// ------------------------------------------------------------------
+	// setPosition
+	// ------------------------------------------------------------------
+	// Définit la nouvelle position de la canne
+	// Dérive la position pour obtenir la vitesse par la même occasion
+	// ------------------------------------------------------------------
 	void setPosition(Vector2 position) {
 		oldPosition = this.position;
 		this.position = position;
@@ -41,12 +58,22 @@ public class Cane {
 		this.velocity.x = deltaPos.x / deltaTime;
 		this.velocity.y = deltaPos.y / deltaTime;
 	}
-
+	
+	// ------------------------------------------------------------------
+	// setAngle
+	// ------------------------------------------------------------------
+	// Définit le nouvel angle de la canne
+	// ------------------------------------------------------------------
 	void setAngle(float angle) {
 		this.angle = angle;
 	}
-
-	void drawCane(GdxGraphics g) {
+	
+	// ------------------------------------------------------------------
+	// drawCaneDebug
+	// ------------------------------------------------------------------
+	// Dessine la canne de manière simpliste avec ses hitPoints pour debug
+	// ------------------------------------------------------------------
+	void drawCaneDebug(GdxGraphics g) {
 		updateHitPoint();
 		g.drawRectangle(position.x, position.y, width, lenght, angle);
 		for (int i = 0; i < hitPoints.length; i++) {
@@ -54,6 +81,11 @@ public class Cane {
 		}
 	}
 
+	// ------------------------------------------------------------------
+	// updateHitPoint
+	// ------------------------------------------------------------------
+	// Met a jour la position de tous les hitPoint de la canne
+	// ------------------------------------------------------------------
 	void updateHitPoint() {
 		int distBetween = 12;
 		for (int i = 0; i < hitPoints.length / 3; i++) {
@@ -73,10 +105,16 @@ public class Cane {
 
 	}
 
+	// ------------------------------------------------------------------
+	// getVelocity
+	// ------------------------------------------------------------------
+	// Retourne la vitesse de la canne
+	// ------------------------------------------------------------------
 	Vector2 getVelocity() {
 		return velocity;
 	}
 
+	// String de debeug
 	String debug() {
 		String out = "";
 		out += "oldPosition: " + oldPosition + "  Position: " + position + "  velocity: " + velocity;

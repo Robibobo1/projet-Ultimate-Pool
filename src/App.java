@@ -24,6 +24,13 @@ import ch.hevs.gdx2d.desktop.physics.DebugRenderer;
 import ch.hevs.gdx2d.lib.GdxGraphics;
 import ch.hevs.gdx2d.lib.physics.PhysicsWorld;
 
+//------------------------------------------------------------------
+// App
+//------------------------------------------------------------------
+// Classe principale du jeu, extends la classe PortableApplication
+// C'est ici que tous les autres objets sont crées et que la 
+// logique du jeu est décidée
+//------------------------------------------------------------------
 public class App extends PortableApplication {
 
 	enum State {
@@ -123,7 +130,13 @@ public class App extends PortableApplication {
 			size = new Dimension(1920, 1080);
 		new App(size);
 	}
-
+	
+	
+	// ------------------------------------------------------------------
+	// Init
+	// ------------------------------------------------------------------
+	// Appellé lors de l'initialisation de la fenêtre
+	// Crée les polices d'écritures, télécharges les images et les sons
 	@Override
 	public void onInit() {
 
@@ -172,21 +185,40 @@ public class App extends PortableApplication {
 		hitCane = new SoundSample("data/Sounds/hitCane.mp3");
 		imgTable = new BitmapImage("data/images/Table.png");
 		yellow = new BitmapImage("data/images/Jaune.png");
+		
+		hitSoft.setVolume(0.06f);
+		hitHard.setVolume(0.1f);
+		hitCane.setVolume(0.08f);
+		pocket.setVolume(0.07f);
 	}
+	
+	// ------------------------------------------------------------------
+	// OnGraphicrender
+	// ------------------------------------------------------------------
+	// Est appelé chaque 1/60 seconde ( temps d'une image pour 60Hz)
+	// Toute la logique du jeu est faite dans cett efonction, tout 
+	// comme le rendu graphique.
+	// ------------------------------------------------------------------
 
 	@Override
 	public void onGraphicRender(GdxGraphics g) {
+		// Efface le contenu de l'écran
 		g.clear();
+		
+		// Dessines les images
 		g.draw(imgSol, 0, 0, screenSize.width, screenSize.height);
 		g.drawPicture(screenSize.width / 2, screenSize.height / 2, imgTable);
 		g.draw(gradient, screenSize.width / 2 - 200, screenSize.height - 90, forceScaleWidth, 25, 500, 500, 0, 0); // à
 
+		// Ecrit les infos des joueurs
 		setPlayerScore();
 		showGameInfo(g);
 
+		// Met a jour la physique et la position de la souris
 		PhysicsWorld.updatePhysics(Gdx.graphics.getDeltaTime());
 		mousePosition = new Vector2(Gdx.input.getX(), screenSize.height - Gdx.input.getY());
-
+		
+		// Dessine les boules sur le terrain
 		for (int i = 0; i < 16; i++) {
 			if (!pool.ballArray[i].isInHole) {
 				g.draw(balls.sprites[0][i], (float) (pool.ballArray[i].getBodyPosition().x - pool.ballRadius),
@@ -195,12 +227,10 @@ public class App extends PortableApplication {
 			}
 		}
 
-		dbgRenderer.render(world, g.getCamera().combined);
-
 		if (gameMode != Mode.Place)
 			ballPosition = pool.ballArray[0].getBodyPosition();
 
-		hitHard.setVolume((float) 0.05);
+		// Switch case pour le son des collisions
 		switch (collisionSound) {
 		case 0:
 			pocket.play();
@@ -211,17 +241,17 @@ public class App extends PortableApplication {
 		case 2:
 			hitSoft.play();
 			break;
-		case 3:
-			hitCane.setVolume((float) 0.1);
+		case 3:	
 			hitCane.play();
 			break;
 		default:
 			break;
 		}
 		collisionSound = -1;
-
+		
+		// Switch case principal de sélection de jeu
 		switch (stateNow) {
-		case Play:
+		case Play: // Lorsqe le joueur joue avec la canne
 			if (gameMode == Mode.Place) {
 				stateNow = State.Place;
 				break;
@@ -240,10 +270,10 @@ public class App extends PortableApplication {
 				stateNow = State.Wait;
 			}
 			break;
-		case Wait:
+		case Wait: // Quand les Balles sont en mouvement
 			waitForSomething();
 			break;
-		case Place:
+		case Place: // Quand le joueur doit placer la blanche
 			if (clickCnt >= 1) {
 				pool.placeWhite(mousePosition);
 				gameMode = Mode.Normal;
@@ -251,42 +281,53 @@ public class App extends PortableApplication {
 				clickCnt = 0;
 			}
 			break;
-		case Choose:
+		case Choose: // Quand le joueur choisi le trou pour la noire
 			chooseHole(g);
 			break;
-		case Lose:
+		case Lose: // Quand le joueur à perdu
 			youLoose(g);
 			break;
-		case Win:
+		case Win: // Quand le jouer à gagné
 			youWin(g);
 			break;
 
 		default:
 			break;
 		}
-		// System.out.println(pNow.holeChoosedNbr);
-		g.drawFPS();
-		g.drawString(20, 200, debugGameEngine());
-	}
 
+		g.drawFPS();
+		//g.drawString(20, 200, debugGameEngine()); // String de debeug
+	}
+	
+	// ------------------------------------------------------------------
+	// OnClick
+	// ---------------------------------------------------------------------
+	// Quand le joueur clic avec sa souris récupère la position et le bouton
+	// ---------------------------------------------------------------------
 	@Override
 	public void onClick(int x, int y, int button) {
 		super.onClick(x, y, button);
-
+		
+		// Clic gauche
 		if (button == Input.Buttons.LEFT) {
 			if (!CollisionDetection.hasCollision(pool.ballArray[0], cane))
 				clickCnt++;
 		}
-
+		// Clic droit
 		if (button == Input.Buttons.RIGHT) {
 			if (!CollisionDetection.hasCollision(pool.ballArray[0], cane))
 				clickCnt--;
 		}
-
-		if (button == Input.Buttons.MIDDLE)
-			pNow.ballsInAll.add(2);
 	}
-
+	
+	// ------------------------------------------------------------------
+	// canePlacement
+	// ------------------------------------------------------------------
+	// Méthode qui sert à gérer le placement de la canne, l'angle et la
+	// force de frappe. La détection de collision entre la canne et la
+	// boule blanche est aussi géré ici.
+	// Retourne true lorsque la canne frappe la balle blanche
+	// ------------------------------------------------------------------
 	boolean canePlacement() {
 
 		float angle = 90 + (float) Math
@@ -294,19 +335,21 @@ public class App extends PortableApplication {
 		if (mousePosition.x - ballPosition.x < 0)
 			angle = angle + 180;
 		force.setAngle(angle + 90);
-
 		Vector2 collisionPoint = CollisionDetection.pointInMeter(pool.ballArray[0], cane);
 		force.set(1f, 1f);
 
 		switch (clickCnt) {
 		case 0:
+			// Change la position et l'angle
 			cane.setPosition(mousePosition);
 			cane.setAngle(angle);
 			break;
 		case 1:
+			// Change uniquement la position
 			cane.setPosition(mousePosition);
 			break;
 		case 2:
+			// Attend la barre espace pour la force de la canne
 			waitPress = true;
 			if (isPressed) {
 				float newPosX;
@@ -350,6 +393,12 @@ public class App extends PortableApplication {
 		return false;
 	}
 
+	// ------------------------------------------------------------------
+	// chooseHole
+	// ------------------------------------------------------------------
+	// Methode appelée lorsque le joueur doit choisir l'emplacement de la 
+	// balle noire. Dessine graphiquement le trou choisis dans g
+	// ------------------------------------------------------------------
 	void chooseHole(GdxGraphics g) {
 		pNow.holeChosed = false;
 		int radius = 100;
@@ -368,14 +417,14 @@ public class App extends PortableApplication {
 		clickCnt = 0;
 	}
 
+	// ------------------------------------------------------------------
+	// OnKeyDown
+	// ------------------------------------------------------------------
+	// Appelée lorsque on appuie sur une touche du clavier
+	// ------------------------------------------------------------------
 	public void onKeyDown(int input) {
 		if (input == Input.Keys.SPACE && waitPress)
 			isPressed = true;
-	}
-
-	public void onKeyUp(int input) {
-		if (input == Input.Keys.SPACE)
-			isPressed = false;
 		if (input == Input.Keys.ENTER)
 			System.exit(1);
 		if (input == Input.Keys.NUM_1)
@@ -390,6 +439,21 @@ public class App extends PortableApplication {
 			pNow.skin = 4;
 	}
 
+	// ------------------------------------------------------------------
+	// OnKeyUp
+	// ------------------------------------------------------------------
+	// Appelée lorsque on relache une touche du clavier
+	// ------------------------------------------------------------------
+	public void onKeyUp(int input) {
+		if (input == Input.Keys.SPACE)
+			isPressed = false;	
+	}
+
+	// ------------------------------------------------------------------
+	// roundEnded
+	// ------------------------------------------------------------------
+	// Renvoie true lorsque toutes les balles sont arrêtées
+	// ------------------------------------------------------------------
 	boolean roundEnded() {
 		for (PhysicsCircle c : pool.ballArray) {
 			if (c.getBodyLinearVelocity().len() > 0.001f)
@@ -398,6 +462,14 @@ public class App extends PortableApplication {
 		return true;
 	}
 
+	// ------------------------------------------------------------------
+	// waitForSomething
+	// ------------------------------------------------------------------
+	// Méthode appelée 60x par seconde lorsque les balles sont encore
+	// en mouvement. Dès que les balles sont arrêtées, on passe une seule
+	// fois dans le if(Roundended) pour la détecction des faute et le 
+	// changement de State.
+	// ------------------------------------------------------------------
 	void waitForSomething() {
 
 		checkBallInHole();
@@ -447,7 +519,14 @@ public class App extends PortableApplication {
 			nextPlayer();
 		}
 	}
-
+	
+	// ------------------------------------------------------------------
+	// checkForfault
+	// ------------------------------------------------------------------
+	// Méthode appelée pour tester si le joueur pNow a fait une erreur.
+	// Retourne true si c'est le cas.
+	// Les règles du jeu sont expliquées dans le rapport
+	// ------------------------------------------------------------------
 	boolean checkForFault() {
 
 		if (gameMode == Mode.Place) {
@@ -507,6 +586,14 @@ public class App extends PortableApplication {
 		return false;
 	}
 
+	// ------------------------------------------------------------------
+	// checkBallInHole
+	// ------------------------------------------------------------------
+	// Regarde 60x par seconde si une des balles est rentrée dans un 
+	// des trous. Si c'est le cas, on place l'indexe de la balle dans
+	// 2 listes, une qui est temporaire pour le round et une permanente
+	// durant la partie.
+	// ------------------------------------------------------------------
 	void checkBallInHole() {
 		if (!pool.collisionList.isEmpty()) {
 			if (pool.collisionList.lastElement()[0] == 0) // Balle blanche dans trou
@@ -538,6 +625,11 @@ public class App extends PortableApplication {
 		}
 	}
 
+	// ------------------------------------------------------------------
+	// debugGameEngine
+	// ------------------------------------------------------------------
+	// Méthode créant un string de debeug
+	// ------------------------------------------------------------------
 	String debugGameEngine() {
 		String out = "";
 		out += "Player " + pNow.number + " - " + pNow.playerType + " - " + pNow.score;
@@ -549,7 +641,12 @@ public class App extends PortableApplication {
 		out += pNow.holeChoosedNbr;
 		return out;
 	}
-
+	
+	// ------------------------------------------------------------------
+	// NextPlayer
+	// ------------------------------------------------------------------
+	// La méthode change de joueur quand elle est appellée
+	// ------------------------------------------------------------------
 	void nextPlayer() {
 		if (pNow.number == p1.number) {
 			p1 = pNow;
@@ -563,14 +660,24 @@ public class App extends PortableApplication {
 			pOther = p2;
 		}
 	}
-
+	
+	// ------------------------------------------------------------------
+	// isStriped
+	// ------------------------------------------------------------------
+	// Retourne true si la balle mise en paramètre est rayée
+	// ------------------------------------------------------------------
 	boolean isStriped(int ballNbr) {
 		if (ballNbr >= 9 && ballNbr <= 15) {
 			return true;
 		}
 		return false;
 	}
-
+	
+	// ------------------------------------------------------------------
+	// isSolid
+	// ------------------------------------------------------------------
+	// Retourne true si la balle mise en paramètre est pleine
+	// ------------------------------------------------------------------
 	boolean isSolid(int ballNbr) {
 		if (ballNbr >= 1 && ballNbr <= 7) {
 			return true;
@@ -578,6 +685,12 @@ public class App extends PortableApplication {
 		return false;
 	}
 
+	// ------------------------------------------------------------------
+	// showGameInfo
+	// ------------------------------------------------------------------
+	// Ecrit sur l'écran toutes les informations utiles pour les joueurs.
+	// La méthode écrit sur l'interface graphique g
+	// ------------------------------------------------------------------
 	void showGameInfo(GdxGraphics g) {
 
 		Color backColor = new Color(222f / 255, 183f / 255, 127f / 255, 1);
@@ -663,9 +776,14 @@ public class App extends PortableApplication {
 					cnt++;
 			}
 		}
-		pNow.score = 7;// cnt;
+		pNow.score = cnt;
 	}
-
+	
+	// ------------------------------------------------------------------
+	// drawCane
+	// ------------------------------------------------------------------
+	// La méthode dessine le sprite de la canne au bon endroit sur l'écran
+	// ------------------------------------------------------------------
 	void drawCane(GdxGraphics g) {
 		int spriteWidth = 25;
 		double spriteAngle = Math.toDegrees(Math.atan(((double) spriteWidth) / ((double) cane.lenght)));
@@ -675,6 +793,11 @@ public class App extends PortableApplication {
 				0, 600, spriteWidth, 1, 1, cane.angle - 90);
 	}
 
+	// ------------------------------------------------------------------
+	// youWin
+	// ------------------------------------------------------------------
+	// Dessine l'écran de victoire
+	// ------------------------------------------------------------------
 	void youWin(GdxGraphics g) {
 		g.drawFilledRectangle(g.getScreenWidth() / 2, g.getScreenHeight() / 2, 830, 310, 0, Color.PINK);
 		g.drawFilledRectangle(g.getScreenWidth() / 2, g.getScreenHeight() / 2, 820, 300, 0, Color.BLACK);
@@ -682,7 +805,12 @@ public class App extends PortableApplication {
 		g.drawString(g.getScreenWidth() / 2 - 370, g.getScreenHeight() / 2 - 35,
 				"Appuie sur Enter pour éteindre le jeu.", endLittleFont);
 	}
-
+	
+	// ------------------------------------------------------------------
+	// youLoose
+	// ------------------------------------------------------------------
+	// Dessine l'écran de défaite
+	// ------------------------------------------------------------------
 	void youLoose(GdxGraphics g) {
 		g.drawFilledRectangle(g.getScreenWidth() / 2, g.getScreenHeight() / 2, 830, 310, 0, Color.RED);
 		g.drawFilledRectangle(g.getScreenWidth() / 2, g.getScreenHeight() / 2, 820, 300, 0, Color.BLACK);

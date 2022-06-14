@@ -5,11 +5,17 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.util.Vector;
 
-import ch.hevs.gdx2d.components.audio.MusicPlayer;
 import ch.hevs.gdx2d.components.physics.primitives.PhysicsStaticBox;
 import ch.hevs.gdx2d.components.physics.primitives.PhysicsStaticLine;
 import ch.hevs.gdx2d.lib.physics.AbstractPhysicsObject;
 
+//------------------------------------------------------------------
+// Pool
+//------------------------------------------------------------------
+// Classe créant tous les attributs et les objets physiques 
+// nécessaires pour une table de billard. Stock par la même occasion
+// les collisions de chaque round.
+//------------------------------------------------------------------
 public class Pool {
 	App a;
 	
@@ -28,6 +34,12 @@ public class Pool {
 	double cornerPocketRad;
 	double sideDepth;
 
+	// ------------------------------------------------------------------
+	// Pool
+	// ------------------------------------------------------------------
+	// Constructeur de la classe Pool
+	// Définit toutes les valeurs de taille selon l'objet App a en paramètre
+	// ------------------------------------------------------------------
 	Pool(App a) {
 		this.a = a;
 
@@ -43,6 +55,11 @@ public class Pool {
 		sideDepth = poolSize.height * 0.04553;
 	}
 
+	// ------------------------------------------------------------------
+	// createPool
+	// ------------------------------------------------------------------
+	// Construit tous les éléments physique de la table de billard
+	// ------------------------------------------------------------------
 	void createPool() {
 		buildWall();
 		buildPocket();
@@ -53,6 +70,12 @@ public class Pool {
 		placeTriangle(new Point((int) (midP.x + (0.25 * poolSize.width)), (int) (midP.y)));
 	}
 
+	// ------------------------------------------------------------------
+	// placeWhite
+	// ------------------------------------------------------------------
+	// Crée une nouvelle balle blanche et la place à la position donnée
+	// en paramètre.
+	// ------------------------------------------------------------------
 	void placeWhite(Vector2 position) {
 		ballArray[0] = null;
 		ballArray[0] = new PoolBall("0", position, (float) ballRadius, 10f, 0.7f, 0f, a) {
@@ -78,14 +101,15 @@ public class Pool {
 		frictionJointDef.collideConnected = false;
 		a.world.createJoint(frictionJointDef);
 	}
-
+	
+	// ------------------------------------------------------------------
+	// placeTriangle
+	// ------------------------------------------------------------------
+	// Place toutes les balles du triangle de billard
+	// ------------------------------------------------------------------
 	void placeTriangle(Point position) {
-		ballPlacer(5, position);
 		collisionList.clear();
-	}
-
-	void ballPlacer(int rowLeft, Point position) {
-
+		
 		ballArray[1] = new PoolBall("1", // Name
 				new Vector2((float) (position.x), // Position x
 						(float) (position.y)), // Position y
@@ -172,7 +196,8 @@ public class Pool {
 		}
 
 	}
-
+	
+	// string de debeug
 	String debugCollisionList() {
 		String out = "";
 		for (int[] a : collisionList) {
@@ -184,6 +209,11 @@ public class Pool {
 		return out;
 	}
 
+	// ------------------------------------------------------------------
+	// buildPocket
+	// ------------------------------------------------------------------
+	// Construit les bords des trous dans le moteur physique
+	// ------------------------------------------------------------------
 	void buildPocket() {
 		holesArray[1] = new Hole(21, new Vector2(midP.x, (float) (midP.y + (poolSize.height / 2) + 0.75 * sidePocket)),
 				(float) sidePocket, (float) sidePocket, this);
@@ -210,7 +240,12 @@ public class Pool {
 						(float) (midP.y + (poolSize.height / 2) + 1.5 * sideDepth)),
 				(float) sidePocket, (float) sidePocket, (float) (Math.PI / 4), this);
 	}
-
+	
+	// ------------------------------------------------------------------
+	// buildWall
+	// ------------------------------------------------------------------
+	// Construit les murs du billard dans le moteur physique
+	// ------------------------------------------------------------------
 	void buildWall() {
 		// le coté gauche du billard, a partir du trou du haut
 		new PhysicsStaticLine("Gauche",
