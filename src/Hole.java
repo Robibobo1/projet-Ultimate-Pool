@@ -5,17 +5,20 @@ import ch.hevs.gdx2d.lib.physics.AbstractPhysicsObject;
 public class Hole extends PhysicsStaticBox {
 
 	Pool p;
+	int number;
 
-	public Hole(String name, Vector2 position, float width, float height, float angle, Pool p) {
-		super(name, position, width, height, angle);
+	public Hole(int name, Vector2 position, float width, float height, float angle, Pool p) {
+		super("" + name, position, width, height, angle);
 		setCollision();
 		this.p = p;
+		number = name;
 	}
 
-	public Hole(String name, Vector2 position, float width, float height, Pool p) {
-		super(name, position, width, height);
+	public Hole(int name, Vector2 position, float width, float height, Pool p) {
+		super("" + name, position, width, height);
 		setCollision();
 		this.p = p;
+		number = name;
 	}
 
 	@Override

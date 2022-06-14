@@ -14,6 +14,7 @@ public class Pool {
 	
 	PoolBall[] ballArray = new PoolBall[16];
 	Vector<int[]> collisionList = new Vector<int[]>();
+	Hole[] holesArray = new Hole[6];
 
 	Dimension poolSize = new Dimension();
 	Point midP = new Point();
@@ -29,8 +30,8 @@ public class Pool {
 	Pool(App a) {
 		this.a = a;
 
-		midP.x = a.getWindowWidth() / 2;
-		midP.y = a.getWindowHeight() / 2;
+		midP.x = a.screenSize.width / 2;
+		midP.y = a.screenSize.height / 2;
 
 		poolSize.height = 580;
 		poolSize.width = poolSize.height * 2;
@@ -182,26 +183,27 @@ public class Pool {
 	}
 
 	void buildPocket() {
-		new Hole("21", new Vector2(midP.x, (float) (midP.y + (poolSize.height / 2) + 0.75 * sidePocket)),
+		holesArray[1] = new Hole(21, new Vector2(midP.x, (float) (midP.y + (poolSize.height / 2) + 0.75 * sidePocket)),
 				(float) sidePocket, (float) sidePocket, this);
-		new Hole("24", new Vector2(midP.x, (float) (midP.y - (poolSize.height / 2) - 0.75 * sidePocket)),
+		
+		holesArray[4] = new Hole(24, new Vector2(midP.x, (float) (midP.y - (poolSize.height / 2) - 0.75 * sidePocket)),
 				(float) sidePocket, (float) sidePocket, this);
 
-		new Hole("20",
+		holesArray[0] = new Hole(20,
 				new Vector2((float) (midP.x - poolSize.width / 2 - 1.5 * sideDepth),
 						(float) (midP.y - (poolSize.height / 2) - 1.5 * sideDepth)),
 				(float) sidePocket, (float) sidePocket, (float) (Math.PI / 4), this);
-		new Hole("22",
+		holesArray[2] = new Hole(22,
 				new Vector2((float) (midP.x - poolSize.width / 2 - 1.5 * sideDepth),
 						(float) (midP.y + (poolSize.height / 2) + 1.5 * sideDepth)),
 				(float) sidePocket, (float) sidePocket, (float) (Math.PI / 4), this);
 
-		new Hole("23",
+		holesArray[3] = new Hole(23,
 				new Vector2((float) (midP.x + poolSize.width / 2 + 1.5 * sideDepth),
 						(float) (midP.y - (poolSize.height / 2) - 1.5 * sideDepth)),
 				(float) sidePocket, (float) sidePocket, (float) (Math.PI / 4), this);
 
-		new Hole("25",
+		holesArray[5] = new Hole(25,
 				new Vector2((float) (midP.x + poolSize.width / 2 + 1.5 * sideDepth),
 						(float) (midP.y + (poolSize.height / 2) + 1.5 * sideDepth)),
 				(float) sidePocket, (float) sidePocket, (float) (Math.PI / 4), this);

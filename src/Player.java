@@ -13,9 +13,8 @@ public class Player {
 	int score = 0;
 	int skin = 0;
 	
-	boolean allIn = false;
 	boolean holeChosed = false;
-	int holeChosedNbr = 0;
+	int holeChoosedNbr = 0;
 
 	Vector<Integer> ballsInTmp = new Vector<Integer>();
 	Vector<Integer> ballsInAll = new Vector<Integer>();
