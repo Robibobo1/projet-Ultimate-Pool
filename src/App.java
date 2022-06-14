@@ -9,7 +9,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
-import com.badlogic.gdx.math.Ellipse;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import java.awt.Point;
@@ -55,27 +54,42 @@ public class App extends PortableApplication {
 	Dimension screenSize;
 	Vector2 ballPosition;
 
+	// Point milieu des trous
 	Point[] holePoint;
 
+	// Variables booléennes pour la force de canne
 	boolean waitPress = false;
 	boolean isPressed = false;
 	boolean hasBeenPressed = false;
 
+	// Variables de forces pour la canne
 	int forceCane = 0;
 	float forceScaleWidth = 1;
-
-	int clickCnt = 0;
 	Vector2 force = new Vector2(1, 1);
+
+	// Compteur de clic souris
+	int clickCnt = 0;
+
+	// Vecteur position de la souris
 	Vector2 mousePosition;
 
+	// ------------------------------------------------------------------
+	// Constructeur de App
+	// ------------------------------------------------------------------
+	// Paramètres : un type Dimension contenant la taille de l'écran
+	// Crée la fenêtre de portable application et instancie les joueurs
+	// ------------------------------------------------------------------
 	App(Dimension screenSize) {
+		// Crée la fenêtre Portable Application
 		super(screenSize.width, screenSize.height, false);
 		this.screenSize = screenSize;
 		ballPosition = new Vector2(0, 0);
 
+		// Crée les joueurs
 		p1 = new Player(1);
 		p2 = new Player(2);
 
+		// Met un skin de manière random entre les 2 joueurs
 		Random rand = new Random();
 		p1.skin = rand.nextInt(2) * 2;
 		p2.skin = rand.nextInt(2) * 2 + 1;
@@ -84,6 +98,11 @@ public class App extends PortableApplication {
 		pOther = p2;
 	}
 
+	// ------------------------------------------------------------------
+	// Main
+	// ------------------------------------------------------------------
+	// Récupère la taille de l'écran et crée un objet App
+	// ------------------------------------------------------------------
 	public static void main(String[] args) {
 		Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
 		if (size.width < 1920)
@@ -207,7 +226,7 @@ public class App extends PortableApplication {
 		default:
 			break;
 		}
-		//System.out.println(pNow.holeChoosedNbr);
+		// System.out.println(pNow.holeChoosedNbr);
 		g.drawFPS();
 		g.drawString(20, 200, debugGameEngine());
 	}
@@ -305,7 +324,7 @@ public class App extends PortableApplication {
 					stateNow = State.Play;
 					clickCnt = 0;
 				}
-			} 
+			}
 		}
 		clickCnt = 0;
 	}
@@ -350,7 +369,8 @@ public class App extends PortableApplication {
 
 			if (stateNow == State.Lose || stateNow == State.Win)
 				return;
-			else stateNow = State.Play;
+			else
+				stateNow = State.Play;
 
 			if (gameMode == Mode.Place)
 				stateNow = State.Place;
@@ -426,7 +446,7 @@ public class App extends PortableApplication {
 					stateNow = State.Lose;
 					return true;
 				}
-				if (ballIn == 8 ) {
+				if (ballIn == 8) {
 					if (pool.ballArray[8].holeNbr == pNow.holeChoosedNbr)
 						stateNow = State.Win;
 					else
