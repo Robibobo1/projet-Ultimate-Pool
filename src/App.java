@@ -188,7 +188,7 @@ public class App extends PortableApplication {
 		yellow = new BitmapImage("data/images/Jaune.png");
 		
 		hitSoft.setVolume(0.06f);
-		hitHard.setVolume(0.1f);
+		hitHard.setVolume(0.08f);
 		hitCane.setVolume(0.08f);
 		pocket.setVolume(0.07f);
 	}
@@ -217,6 +217,7 @@ public class App extends PortableApplication {
 
 		// Met a jour la physique et la position de la souris
 		PhysicsWorld.updatePhysics(Gdx.graphics.getDeltaTime());
+		dbgRenderer.render(world, g.getCamera().combined);
 		mousePosition = new Vector2(Gdx.input.getX(), screenSize.height - Gdx.input.getY());
 		
 		// Dessine les boules sur le terrain

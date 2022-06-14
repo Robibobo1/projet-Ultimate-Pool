@@ -50,7 +50,7 @@ public class Pool {
 		poolSize.width = poolSize.height * 2;
 
 		ballRadius = ((double) poolSize.height * 0.05089) / 2;
-		sidePocket = poolSize.height * 0.11875;
+		sidePocket = poolSize.height * 0.14;
 		cornerPocketRad = Math.sqrt(Math.pow(poolSize.height * 0.10446, 2) / 2);
 		sideDepth = poolSize.height * 0.04553;
 	}
@@ -212,7 +212,7 @@ public class Pool {
 	// ------------------------------------------------------------------
 	// buildPocket
 	// ------------------------------------------------------------------
-	// Construit les bords des trous dans le moteur physique
+	// Construit les trous dans le moteur physique
 	// ------------------------------------------------------------------
 	void buildPocket() {
 		holesArray[1] = new Hole(21, new Vector2(midP.x, (float) (midP.y + (poolSize.height / 2) + 0.75 * sidePocket)),
