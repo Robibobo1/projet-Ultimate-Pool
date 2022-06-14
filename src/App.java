@@ -103,7 +103,7 @@ public class App extends PortableApplication {
 	// ------------------------------------------------------------------
 	App(Dimension screenSize) {
 		// Crée la fenêtre Portable Application
-		super(screenSize.width, screenSize.height, false);
+		super(screenSize.width, screenSize.height, true);
 		this.screenSize = screenSize;
 		ballPosition = new Vector2(0, 0);
 
@@ -496,11 +496,13 @@ public class App extends PortableApplication {
 				if (isStriped(firstIn)) {
 					pNow.playerType = Player.BallType.Striped;
 					pOther.playerType = Player.BallType.Solid;
+					pNow.ballsInTmp.clear();
 					return;
 				}
 				if (isSolid(firstIn)) {
 					pNow.playerType = Player.BallType.Solid;
 					pOther.playerType = Player.BallType.Striped;
+					pNow.ballsInTmp.clear();
 					return;
 				}
 			}
