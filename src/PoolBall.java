@@ -8,6 +8,7 @@ public class PoolBall extends PhysicsCircle {
 	App a;
 	boolean isInHole = false;
 	boolean collisionDetected;
+	int holeNbr = 0;
 
 	public PoolBall(String name, Vector2 position, float radius, float density, float restitution, float friction, App a) {
 		super(name, position, radius, density, restitution, friction);
@@ -36,9 +37,7 @@ public class PoolBall extends PhysicsCircle {
 				a.collisionDetectedBall = true;
 			}
 		} catch (Exception e) {
-
 		}
-		
 	}
 
 }
