@@ -45,35 +45,36 @@ public class App extends PortableApplication {
 
 	Mode gameMode = Mode.Normal;
 
+	// Créations des objets principaux
 	World world = PhysicsWorld.getInstance();
 	Pool pool;
 	Cane cane;
 	DebugRenderer dbgRenderer;
-
+	
+	// Créations des textures et bitmaps
 	Texture imgSol;
 	BitmapImage imgTable, yellow;
 	Texture gradient;
 	Spritesheet balls; // i love titi toto <3
 	Spritesheet cues;
-
-	Player pNow, pOther, p1, p2;
-
 	BitmapFont titleFont, textFont, endFont, endLittleFont;
 
+	// Création des joueurs
+	Player pNow, pOther, p1, p2;
+
+	// Position et dimension
 	Dimension screenSize;
 	Vector2 ballPosition;
 
-	SoundSample hitHard;
-	SoundSample hitCane;
-	SoundSample pocket;
-	SoundSample hitSoft;
+	// Création des samples
+	SoundSample hitHard, hitCane, pocket, hitSoft;
 
-	// Pocket = 0
-	// ball = 1
-	// soft = 2
-	// cane = 3
-
+	// Sélecction du son à jouer
 	int collisionSound = -1;
+		// Pocket = 0
+		// ball = 1
+		// soft = 2
+		// cane = 3
 
 	// Point milieu des trous
 	Point[] holePoint;
