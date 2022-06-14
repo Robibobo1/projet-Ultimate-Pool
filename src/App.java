@@ -543,18 +543,19 @@ public class App extends PortableApplication {
 			int[] firstCollision = pool.collisionList.firstElement();
 
 			if (firstCollision[0] == 0) { // Lis la première collision de la balle
-
-				if (pNow.playerType == null && !pNow.ballsInTmp.contains(0))
-					return false;
-
-				if (isStriped(firstCollision[1]) && pNow.playerType == Player.BallType.Solid) {
-					gameMode = Mode.Double;
-					return true;
-				}
-				if (isSolid(firstCollision[1]) && pNow.playerType == Player.BallType.Striped) {
-					gameMode = Mode.Double;
-					return true;
-				}
+				
+				if (pNow.playerType == null && !pNow.ballsInTmp.contains(0));
+				else
+				{
+					if (isStriped(firstCollision[1]) && pNow.playerType == Player.BallType.Solid) {
+						gameMode = Mode.Double;
+						return true;
+					}
+					if (isSolid(firstCollision[1]) && pNow.playerType == Player.BallType.Striped) {
+						gameMode = Mode.Double;
+						return true;
+					}
+				}				
 			}
 		}
 
