@@ -64,7 +64,7 @@ public class Pool {
 					collision[1] = Integer.parseInt(other.name);
 					collisionList.add(collision);
 				} catch (Exception e) {
-
+					
 				}
 			}
 		};

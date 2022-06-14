@@ -22,14 +22,19 @@ public class PoolBall extends PhysicsCircle {
 		try {
 			obj1 = Integer.parseInt(name);
 			obj2 = Integer.parseInt(other.name);
+			System.out.println("vitesse");
+			System.out.println(a.pool.ballArray[obj1].getBody().getLinearVelocity().len());
 			if (obj1 >= 20 || obj2 >= 20) {
 				a.collisionDetectedPocket = true;
 			}
-			else
+			else if(a.pool.ballArray[obj1].getBody().getLinearVelocity().len() < 3)
 			{
+				
+				a.collisionDetectedBallSoft = true;
+			}
+			else if(a.pool.ballArray[obj1].getBody().getLinearVelocity().len() >= 3){
 				a.collisionDetectedBall = true;
 			}
-			//a.pool.ballArray[obj1].getBody().getLinearVelocity();
 		} catch (Exception e) {
 
 		}

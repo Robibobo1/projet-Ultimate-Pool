@@ -55,9 +55,13 @@ public class App extends PortableApplication {
 	Vector2 ballPosition;
 	
 	SoundSample hitHard;
+	SoundSample hitCane;
 	SoundSample pocket;
+	SoundSample hitSoft;
 	boolean collisionDetectedPocket = false;
 	boolean collisionDetectedBall = false;
+	boolean collisionDetectedBallSoft = false;
+	boolean collisionDetectedCane = false;
 
 	boolean waitPress = false;
 	boolean isPressed = false;
@@ -120,7 +124,9 @@ public class App extends PortableApplication {
 		cues = new Spritesheet("data/images/gameCues.png", 3578, 100);
 		
 		hitHard = new SoundSample("data/Sounds/hitHard.mp3");
+		hitSoft = new SoundSample("data/Sounds/hitSoft.mp3");
 		pocket = new SoundSample("data/Sounds/inPocket.mp3");
+		hitCane = new SoundSample("data/Sounds/hitCane.mp3");
 	}
 
 	@Override
@@ -163,6 +169,19 @@ public class App extends PortableApplication {
 			collisionDetectedBall = false;
 		}
 
+		if (collisionDetectedBallSoft) {
+			hitSoft.setVolume((float) 0.05);
+			hitSoft.play();
+			System.out.println("sound played (soft)");
+			collisionDetectedBallSoft = false;
+		}
+		
+		if (collisionDetectedCane) {
+			hitCane.setVolume((float) 0.1);
+			hitCane.play();
+			System.out.println("sound played (Cane)");
+			collisionDetectedCane = false;
+		}
 
 		switch (stateNow) {
 		case Play:
@@ -285,6 +304,7 @@ public class App extends PortableApplication {
 					clickCnt = 0;
 					forceCane = 0;
 					hasBeenPressed = false;
+					collisionDetectedCane = true;
 					return true;
 				}
 			}
