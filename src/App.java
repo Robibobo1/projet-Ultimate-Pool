@@ -11,6 +11,8 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
+import ch.hevs.gdx2d.components.audio.MusicPlayer;
+import ch.hevs.gdx2d.components.audio.SoundSample;
 import java.awt.Point;
 import ch.hevs.gdx2d.components.bitmaps.BitmapImage;
 import ch.hevs.gdx2d.components.bitmaps.Spritesheet;
@@ -53,6 +55,15 @@ public class App extends PortableApplication {
 
 	Dimension screenSize;
 	Vector2 ballPosition;
+	
+	SoundSample hitHard;
+	SoundSample hitCane;
+	SoundSample pocket;
+	SoundSample hitSoft;
+	boolean collisionDetectedPocket = false;
+	boolean collisionDetectedBall = false;
+	boolean collisionDetectedBallSoft = false;
+	boolean collisionDetectedCane = false;
 
 	// Point milieu des trous
 	Point[] holePoint;
@@ -117,7 +128,7 @@ public class App extends PortableApplication {
 		FileHandle Jokerman = Gdx.files.internal("data/font/Jokerman.ttf");
 		FreeTypeFontParameter parameter = new FreeTypeFontParameter();
 		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Dosis);
-
+		
 		parameter.size = generator.scaleForPixelHeight(70);
 		parameter.color = Color.BLACK;
 		titleFont = generator.generateFont(parameter);
@@ -152,6 +163,10 @@ public class App extends PortableApplication {
 		gradient = new Texture("data/images/gradient.png");
 		balls = new Spritesheet("data/images/Boules.png", 100, 100);
 		cues = new Spritesheet("data/images/gameCues.png", 3578, 100);
+		hitHard = new SoundSample("data/Sounds/hitHard.mp3");
+		hitSoft = new SoundSample("data/Sounds/hitSoft.mp3");
+		pocket = new SoundSample("data/Sounds/inPocket.mp3");
+		hitCane = new SoundSample("data/Sounds/hitCane.mp3");
 		imgTable = new BitmapImage("data/images/Table.png");
 		yellow = new BitmapImage("data/images/Jaune.png");
 	}
@@ -181,6 +196,34 @@ public class App extends PortableApplication {
 
 		if (gameMode != Mode.Place)
 			ballPosition = pool.ballArray[0].getBodyPosition();
+		
+		if (collisionDetectedPocket) {
+			hitHard.setVolume((float) 0.05);
+			pocket.play();
+			System.out.println("sound played");
+			collisionDetectedPocket = false;
+		}
+		
+		if (collisionDetectedBall) {
+			hitHard.setVolume((float) 0.05);
+			hitHard.play();
+			System.out.println("sound played");
+			collisionDetectedBall = false;
+		}
+
+		if (collisionDetectedBallSoft) {
+			hitSoft.setVolume((float) 0.05);
+			hitSoft.play();
+			System.out.println("sound played (soft)");
+			collisionDetectedBallSoft = false;
+		}
+		
+		if (collisionDetectedCane) {
+			hitCane.setVolume((float) 0.1);
+			hitCane.play();
+			System.out.println("sound played (Cane)");
+			collisionDetectedCane = false;
+		}
 
 		switch (stateNow) {
 		case Play:
@@ -300,6 +343,7 @@ public class App extends PortableApplication {
 					clickCnt = 0;
 					forceCane = 0;
 					hasBeenPressed = false;
+					collisionDetectedCane = true;
 					return true;
 				}
 			}
@@ -493,10 +537,6 @@ public class App extends PortableApplication {
 					pool.ballArray[pool.collisionList.lastElement()[1]].destroy();
 					pool.ballArray[pool.collisionList.lastElement()[1]].isInHole = true;
 					pool.collisionList.remove(pool.collisionList.size() - 1);
-					if (pool.collisionList.lastElement()[1] == 8
-							&& pool.collisionList.lastElement()[0] == pNow.holeChoosedNbr) {
-						stateNow = State.Win;
-					}
 					return;
 				}
 			}
