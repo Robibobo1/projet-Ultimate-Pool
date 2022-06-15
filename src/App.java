@@ -215,7 +215,7 @@ public class App extends PortableApplication {
 
 		// Met a jour la physique et la position de la souris
 		PhysicsWorld.updatePhysics(Gdx.graphics.getDeltaTime());
-		dbgRenderer.render(world, g.getCamera().combined);
+		//dbgRenderer.render(world, g.getCamera().combined);
 		mousePosition = new Vector2(Gdx.input.getX(), screenSize.height - Gdx.input.getY());
 
 		// Dessine les boules sur le terrain
